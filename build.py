@@ -7,7 +7,7 @@
   python build.py --sample         用 sample/daily.sample.json(虚构示例),不带文章
   python build.py --out 路径.html   指定输出位置
 
-content/ 进 git(本仓库私有,内容是付费直播原话,别改成公开);dist/ 是生成结果,不进 git。
+content/ 进 git(本仓库公开,网页由 GitHub Actions 发布到 Pages);dist/ 是生成结果,不进 git。
 找不到 brant-lens 的导出时,直接用 content/daily.json 里上次同步的版本。数据格式见 README。
 """
 import argparse

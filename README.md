@@ -1,6 +1,8 @@
 # brant-site
 
-布布(Brant)的直播整理网站,两块内容:
+## 👉 打开网页:https://leafpaper.github.io/brant-site/
+
+布布(Brant)的直播整理网站:
 
 - **心路历程**:按时期或主题写的长文——他当时怎么做、怎么想,后来怎么回头看。每句原话都标了出处,并且逐句回逐字稿核对过。文章在 `content/essays/`。
 - **每日直播总结**:每场一篇,每节按自己的结构排版——心法是目录 + 卡片(原话、要点、对应理念的名称),个股和对人是「名称 | 内容」对齐列表,变化是「之前 → 今天」,预设直接列出新设和了结,老毛病写出编号的名称;页头有**大方向时间线**(长期 / 大方向 / 这几天 × 每一场,发散色)。数据由 brant-lens 导出,同步到 `content/daily.json`。
@@ -9,7 +11,7 @@
 
 全部都能全文搜索,有明暗主题,手机上也能看。
 
-> ⚠ **本仓库必须保持私有**:内容是付费直播的原话,还有他的账户金额和盈亏。不要改成公开,也不要部署到不加登录的地址(GitHub Pages 即使仓库私有,网站也是公开的)。
+> ⚠ **本仓库和网页都是公开的,没有密码**(2026-11-06 用户决定,之后再加密码):拿到链接的人都能看,内容含付费直播的原话和他的账户盈亏。网页带 noindex 和 robots.txt,不让搜索引擎收录。以后加密码时,要把 `content/` 挪出这个仓库并清掉历史(公开仓库的历史谁都能翻)。
 
 ## 用法
 
@@ -22,7 +24,7 @@ python build.py --sample   # 用 sample/daily.sample.json(虚构示例)看版式
 
 生成的 `dist/index.html` 是单文件、离线可用,双击用浏览器打开。找不到 brant-lens 时直接用 `content/daily.json` 里上次同步的版本,所以换台电脑 clone 下来也能生成。
 
-每日流程(在 brant-lens 里):`build_why_data.py` → `export_daily.py` → `python ../brant-site/build.py`,然后在这里提交 `content/daily.json`。
+每日流程(在 brant-lens 里):`build_why_data.py` → `export_daily.py` → `python ../brant-site/build.py`,然后在这里提交并推送 `content/daily.json`。推送后 GitHub Actions(`.github/workflows/pages.yml`)自动重新生成网页并发布,一两分钟后网址上就是新的。
 
 ## 目录
 
