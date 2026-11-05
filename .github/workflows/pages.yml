@@ -26,7 +26,8 @@ jobs:
       - name: 生成网页(没有 brant-lens 时自动用 content/daily.json)
         run: python build.py
       - name: 不让搜索引擎收录
-        run: printf 'User-agent: *\nDisallow: /\n' > dist/robots.txt
+        run: |
+          printf 'User-agent: *\nDisallow: /\n' > dist/robots.txt
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
