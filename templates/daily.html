@@ -1,0 +1,681 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>__TITLE__</title>
+<style>
+:root{
+  --bg:#f5f4ef; --surface:#ffffff; --surface2:#ecebe5; --text:#1f1f22; --muted:#66655f; --faint:#8f8e88; --border:#e2e0d8;
+  --accent:#a24a22; --accent-bg:#f7ece5; --quote:#8a3d1a;
+  --chip:#efeee8; --rid:#2a5786; --rid-bg:#e6edf6;
+  --warn:#a3322b; --warn-bg:#f9e8e6; --ok:#2b6c45; --ok-bg:#e2f0e7; --pend:#865700; --pend-bg:#f8eed6;
+  --blue:#2a5786; --blue-bg:#e6edf6; --grey:#66655f; --grey-bg:#ecebe5;
+  --mark:#ffe17a; --shadow:0 1px 2px rgba(30,25,10,.05),0 3px 12px rgba(30,25,10,.05); --popshadow:0 10px 34px rgba(0,0,0,.16);
+  --hh:57px;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#141416; --surface:#1d1d20; --surface2:#26262a; --text:#e9e7e2; --muted:#a5a39d; --faint:#7d7b75; --border:#303035;
+    --accent:#e39a72; --accent-bg:#33251e; --quote:#efb491;
+    --chip:#28282d; --rid:#a0c4ea; --rid-bg:#212d3b;
+    --warn:#f09a92; --warn-bg:#3a2321; --ok:#8fd2a7; --ok-bg:#1d3226; --pend:#efc56f; --pend-bg:#362c16;
+    --blue:#a0c4ea; --blue-bg:#212d3b; --grey:#a5a39d; --grey-bg:#28282d;
+    --mark:#6a5814; --shadow:none; --popshadow:0 10px 34px rgba(0,0,0,.5);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#141416; --surface:#1d1d20; --surface2:#26262a; --text:#e9e7e2; --muted:#a5a39d; --faint:#7d7b75; --border:#303035;
+  --accent:#e39a72; --accent-bg:#33251e; --quote:#efb491;
+  --chip:#28282d; --rid:#a0c4ea; --rid-bg:#212d3b;
+  --warn:#f09a92; --warn-bg:#3a2321; --ok:#8fd2a7; --ok-bg:#1d3226; --pend:#efc56f; --pend-bg:#362c16;
+  --blue:#a0c4ea; --blue-bg:#212d3b; --grey:#a5a39d; --grey-bg:#28282d;
+  --mark:#6a5814; --shadow:none; --popshadow:0 10px 34px rgba(0,0,0,.5);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);
+  font:16px/1.8 -apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei UI","Microsoft YaHei","Noto Sans CJK SC","Source Han Sans SC",sans-serif}
+a{color:inherit}
+button,select,input{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.mono{font-family:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace}
+
+/* 顶栏 */
+header.top{position:sticky;top:0;z-index:30;background:var(--bg);border-bottom:1px solid var(--border)}
+.topin{max-width:1260px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.brand{font-weight:700;font-size:17px;text-decoration:none;white-space:nowrap}
+.brand small{font-weight:400;color:var(--muted);font-size:12px;margin-left:8px}
+.tabs{display:flex;gap:4px}
+.tab{padding:4px 12px;border-radius:999px;text-decoration:none;font-size:14px;color:var(--muted);white-space:nowrap}
+.tab:hover{background:var(--surface2)}
+.tab.on{background:var(--text);color:var(--bg)}
+.tab .cnt{font-size:11.5px;margin-left:5px;opacity:.75}
+.search{flex:1;min-width:170px;max-width:340px;margin-left:auto;position:relative}
+.search input{width:100%;padding:6px 12px 6px 32px;border:1px solid var(--border);border-radius:10px;background:var(--surface);font-size:14px}
+.search svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:15px;height:15px;stroke:var(--faint);fill:none;stroke-width:2}
+.tools{display:flex;gap:6px}
+.iconbtn{border:1px solid var(--border);background:var(--surface);color:var(--muted);border-radius:10px;padding:5px 10px;font-size:13px;cursor:pointer;white-space:nowrap}
+.iconbtn:hover{color:var(--text)}
+.iconbtn[aria-pressed="true"]{color:var(--text);background:var(--chip)}
+
+/* 布局 */
+.wrap{max-width:1260px;margin:0 auto;display:grid;grid-template-columns:248px minmax(0,1fr);gap:36px;padding:0 16px}
+aside#days{position:sticky;top:var(--hh);height:calc(100vh - var(--hh));overflow:auto;padding:16px 6px 40px 0;scrollbar-width:thin}
+.sidehead{font-size:12px;color:var(--faint);padding:0 12px 8px}
+.day{display:block;text-decoration:none;padding:8px 12px;border-radius:10px;margin-bottom:3px;border:1px solid transparent}
+.day:hover{background:var(--surface2)}
+.day.on{background:var(--surface);border-color:var(--border);box-shadow:var(--shadow)}
+.day .dd{font-weight:650;font-size:14px;font-variant-numeric:tabular-nums;display:flex;gap:6px;align-items:baseline}
+.day .dd span{color:var(--muted);font-weight:400;font-size:13px}
+.day .old{font-style:normal;font-size:11px;color:var(--faint);background:var(--chip);border-radius:4px;padding:0 5px;margin-left:auto}
+.day .hl{font-size:12.5px;color:var(--muted);line-height:1.55;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-top:2px}
+main{min-width:0;padding:6px 0 90px}
+article{max-width:790px}
+
+/* 一场的头部 */
+.dayhead{padding:22px 0 4px}
+.dayhead h1{font-size:28px;line-height:1.3;margin:0;display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.dayhead h1 .wd{font-size:15px;color:var(--muted);font-weight:500}
+.meta{font-size:13px;color:var(--muted);margin:10px 0 0;line-height:1.7}
+.meta strong{color:var(--text);font-weight:600}
+.disc{font-size:12.5px;color:var(--faint);margin:6px 0 0;line-height:1.6}
+.secnav{position:sticky;top:var(--hh);z-index:20;background:var(--bg);display:flex;gap:6px;overflow-x:auto;padding:10px 0;margin-top:12px;border-bottom:1px solid var(--border);scrollbar-width:none}
+.secnav::-webkit-scrollbar{display:none}
+.secnav a{flex:0 0 auto;text-decoration:none;font-size:13px;line-height:1.6;padding:2px 11px;border-radius:999px;color:var(--muted);border:1px solid var(--border);background:var(--surface)}
+.secnav a.on{color:#fff;background:var(--accent);border-color:var(--accent)}
+:root[data-theme="dark"] .secnav a.on{color:#1a1a1a}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .secnav a.on{color:#1a1a1a}}
+
+/* 节 */
+.sec{scroll-margin-top:calc(var(--hh) + 60px);margin-top:36px}
+.sec>h2{font-size:19px;line-height:1.4;margin:0 0 12px;display:flex;align-items:baseline;gap:10px}
+.sec>h2 .sn{font-size:13px;color:var(--faint);font-weight:500;font-variant-numeric:tabular-nums;min-width:1.2em}
+.sec p{margin:8px 0}
+.sec ul{margin:6px 0;padding-left:1.15em}
+.sec li{margin:7px 0}
+.sec li::marker{color:var(--faint)}
+.sec li.lvl1{margin-left:1.2em}.sec li.lvl2{margin-left:2.4em}
+.sec h3{font-size:16px;margin:20px 0 6px}
+.sec h4{font-size:15.5px;margin:20px 0 6px;font-weight:650}
+.k-direction h4{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);padding:9px 14px;border-radius:8px;line-height:1.6}
+.k-trades h4,.k-presets h4{font-size:14px;color:var(--muted);text-transform:none;letter-spacing:.04em}
+
+/* 行内元素 */
+.q{color:var(--quote)}
+.ts{font:11.5px/1.4 ui-monospace,SFMono-Regular,Consolas,monospace;color:var(--faint);background:var(--chip);border-radius:4px;padding:1px 4px;margin:0 2px;white-space:nowrap;vertical-align:1px;cursor:help}
+.eid{font:11px/1.4 ui-monospace,SFMono-Regular,Consolas,monospace;color:var(--faint);white-space:nowrap;margin:0 2px;cursor:help}
+.rid{font:600 11.5px/1.4 ui-monospace,SFMono-Regular,Consolas,monospace;color:var(--rid);background:var(--rid-bg);border:0;border-radius:4px;padding:1px 5px;margin:0 1px;cursor:pointer;vertical-align:1px}
+.rid:hover{text-decoration:underline}
+.pid{font:600 11.5px/1.4 ui-monospace,SFMono-Regular,Consolas,monospace;color:var(--pend);background:var(--pend-bg);border-radius:4px;padding:1px 5px;text-decoration:none;white-space:nowrap;vertical-align:1px}
+.tag{font-size:11.5px;color:var(--muted);background:var(--chip);border-radius:4px;padding:1px 6px;margin:0 2px;white-space:nowrap;font-weight:400}
+mark{background:var(--mark);color:inherit;border-radius:2px;padding:0 1px}
+body.nots .ts,body.nots .tsg,body.nots .eid,body.nots .times{display:none}
+
+/* 速览 */
+.brief{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:4px 20px;box-shadow:var(--shadow)}
+.brief .row{display:grid;grid-template-columns:5.5em minmax(0,1fr);gap:14px;padding:12px 0;border-top:1px solid var(--border)}
+.brief .row:first-child{border-top:0}
+.brief .row.one{grid-template-columns:1fr}
+.brief .lbl{font-size:13px;font-weight:650;color:var(--accent);padding-top:2px;line-height:1.6}
+.brief .row:first-child .val{font-size:16.5px;font-weight:500}
+
+/* 心法 */
+.ltools{display:flex;justify-content:flex-end;margin:-4px 0 8px}
+.lesson{background:var(--surface);border:1px solid var(--border);border-radius:12px;margin:8px 0;scroll-margin-top:calc(var(--hh) + 60px)}
+.lesson summary{list-style:none;cursor:pointer;padding:11px 16px;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+.lesson summary::-webkit-details-marker{display:none}
+.lesson summary::after{content:"";flex:0 0 auto;width:7px;height:7px;margin-left:6px;border-right:1.5px solid var(--faint);border-bottom:1.5px solid var(--faint);transform:translateY(-3px) rotate(45deg);transition:transform .15s}
+.lesson[open] summary::after{transform:translateY(0) rotate(-135deg)}
+.lesson .num{font:600 12px ui-monospace,SFMono-Regular,Consolas,monospace;color:var(--faint);flex:0 0 auto}
+.lesson .lt{font-weight:650;font-size:15.5px;line-height:1.55;flex:1 1 16em}
+.badges{display:flex;gap:4px;flex:0 0 auto;margin-left:auto}
+.scope{font-size:11.5px;line-height:1.7;padding:0 8px;border-radius:999px;white-space:nowrap}
+.s-gen{color:var(--ok);background:var(--ok-bg)}
+.s-self{color:var(--blue);background:var(--blue-bg)}
+.s-aud{color:var(--pend);background:var(--pend-bg)}
+.s-contra{color:var(--warn);background:var(--warn-bg)}
+.lbody{padding:2px 16px 12px;border-top:1px solid var(--border)}
+.lbody ul{padding-left:1.15em}
+.keyq{margin:12px 0;padding:9px 14px;border-left:3px solid var(--accent);background:var(--accent-bg);border-radius:0 8px 8px 0;color:var(--quote)}
+.keyq .q{color:inherit}
+.refs{font-size:13px;color:var(--muted);line-height:1.7}
+.refs.contra{color:var(--warn)}
+.times{font-size:12px;color:var(--faint);margin:4px 0 0}
+
+/* 个股、人物卡片 */
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(228px,1fr));gap:10px;margin:8px 0}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 13px;font-size:14.5px;line-height:1.7}
+.card .name{font-weight:700;font-size:15px;margin-bottom:2px}
+.card.wide{grid-column:1/-1}
+
+/* 时间线 */
+.tl{margin:6px 0}
+.ti{display:grid;grid-template-columns:5.8em minmax(0,1fr);gap:16px;scroll-margin-top:calc(var(--hh) + 60px)}
+.ti .when{text-align:right;padding:11px 0;font-variant-numeric:tabular-nums}
+.ti .et{font-weight:700;font-size:15.5px;line-height:1.3}
+.ti .et small{font-size:11px;color:var(--faint);font-weight:400;margin-right:3px}
+.ti .et2{font-size:12.5px;font-weight:650;line-height:1.45}
+.ti .bj,.ti .pg{font-size:11.5px;color:var(--faint);line-height:1.45}
+.ti .what{position:relative;padding:10px 0 10px 18px;border-left:2px solid var(--border);font-size:15px}
+.ti .what::before{content:"";position:absolute;left:-6px;top:18px;width:10px;height:10px;border-radius:50%;background:var(--bg);border:2px solid var(--accent)}
+
+/* 翻页、页脚 */
+.pager{display:flex;justify-content:space-between;gap:12px;margin-top:52px;padding-top:18px;border-top:1px solid var(--border)}
+.pager a{text-decoration:none;font-size:14px;color:var(--muted);padding:8px 14px;border:1px solid var(--border);border-radius:10px;background:var(--surface)}
+.pager a:hover{color:var(--text)}
+.foot{font-size:12px;color:var(--faint);margin-top:28px}
+
+/* 预设看板 */
+.filters{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:16px 0 6px}
+.fchip{border:1px solid var(--border);background:var(--surface);color:var(--muted);border-radius:999px;padding:3px 12px;font-size:13px;cursor:pointer}
+.fchip.on{background:var(--text);color:var(--bg);border-color:var(--text)}
+.filters select{border:1px solid var(--border);background:var(--surface);border-radius:8px;padding:3px 8px;font-size:13px;margin-left:auto}
+.pcard{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:13px 16px;margin:10px 0;scroll-margin-top:calc(var(--hh) + 20px)}
+.pgroup{margin:24px 0 4px}
+.pgh{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;padding:0 2px 6px;border-bottom:1px solid var(--border)}
+.pgh .tk{font-size:17px}
+.pgc{font-size:12.5px;color:var(--muted)}
+.pgroup .pcard{margin:8px 0}
+.tk2{font-weight:700;font-size:13px;color:var(--muted)}
+.pcard.flash{animation:flash 2s ease-out}
+@keyframes flash{0%{box-shadow:0 0 0 3px var(--accent)}100%{box-shadow:0 0 0 0 transparent}}
+.ptop{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:13px}
+.ptop .pidl{font:12px ui-monospace,SFMono-Regular,Consolas,monospace;color:var(--faint)}
+.tk{font-weight:700;font-size:15.5px}
+.kind{color:var(--muted);background:var(--chip);border-radius:4px;padding:0 7px;font-size:12px;line-height:1.8}
+.st{border-radius:999px;padding:0 9px;font-size:12px;line-height:1.8;white-space:nowrap}
+.st-pend{color:var(--pend);background:var(--pend-bg)}.st-ok{color:var(--ok);background:var(--ok-bg)}
+.st-grey{color:var(--grey);background:var(--grey-bg)}.st-blue{color:var(--blue);background:var(--blue-bg)}
+.st-void{color:var(--faint);background:var(--grey-bg);text-decoration:line-through}
+.pfrom{margin-left:auto;font-size:12.5px;color:var(--muted);white-space:nowrap}
+.prow{display:grid;grid-template-columns:2.6em minmax(0,1fr);gap:10px;margin-top:7px;font-size:14.5px;line-height:1.7}
+.prow .lbl{color:var(--faint);font-size:12.5px;padding-top:2px}
+.pq{margin:10px 0 0;padding:7px 12px;border-left:3px solid var(--accent);background:var(--accent-bg);border-radius:0 8px 8px 0;color:var(--quote);font-size:14px}
+.hist{list-style:none;margin:10px 0 0;padding:8px 0 0;border-top:1px dashed var(--border);font-size:13px;color:var(--muted)}
+.hist li{margin:5px 0;line-height:1.65}
+.hist .hd{font-variant-numeric:tabular-nums;margin-right:6px}
+.empty{color:var(--muted)}
+
+/* 搜索 */
+.hitday{margin:22px 0 6px;font-weight:650;font-size:15px}
+.hitday span{color:var(--faint);font-weight:400;font-size:13px;margin-left:6px}
+.hit{display:block;text-decoration:none;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:8px 13px;margin:6px 0;font-size:14px;line-height:1.7}
+.hit:hover{border-color:var(--faint)}
+.hit .where{font-size:12px;color:var(--faint);display:block}
+
+/* 理念编号弹层 */
+.pop{position:fixed;z-index:60;width:min(340px,calc(100vw - 24px));background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:var(--popshadow);padding:12px 14px;font-size:13.5px;line-height:1.7;display:none}
+.pop.show{display:block}
+.pop .ph{font-weight:650;margin-bottom:4px;display:flex;gap:6px;align-items:baseline;flex-wrap:wrap}
+.pop .pf{font-size:12px;color:var(--faint);margin:6px 0 0}
+.pop p{margin:4px 0}
+
+@media (max-width:880px){
+  .topin{gap:8px 10px}
+  .wrap{grid-template-columns:minmax(0,1fr);gap:0}
+  aside#days{position:static;height:auto;display:flex;gap:6px;overflow-x:auto;padding:10px 0;border-bottom:1px solid var(--border);scrollbar-width:none}
+  aside#days::-webkit-scrollbar{display:none}
+  .sidehead{display:none}
+  .day{flex:0 0 auto;padding:4px 11px;margin:0;border-color:var(--border);background:var(--surface)}
+  .day.on{background:var(--text);color:var(--bg);border-color:var(--text)}
+  .day.on .dd span{color:inherit;opacity:.75}
+  .day .hl,.day .old{display:none}
+  .search{order:5;max-width:none;flex:1 1 170px;margin-left:0}
+  .tools{order:6}
+}
+@media (max-width:560px){
+  body{font-size:15.5px}
+  .brand small{display:none}
+  .dayhead h1{font-size:24px}
+  .brief{padding:2px 14px}
+  .brief .row{grid-template-columns:1fr;gap:2px;padding:10px 0}
+  .ti{grid-template-columns:4.6em minmax(0,1fr);gap:10px}
+  .ti .what{padding-left:14px}
+  .lesson summary{padding:10px 12px}.lbody{padding:2px 12px 10px}
+  .prow{grid-template-columns:1fr;gap:0}
+  .filters select{margin-left:0}
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="topin">
+    <a class="brand" href="#/">__TITLE__<small id="brandsub"></small></a>
+    <nav class="tabs" aria-label="视图">
+      <a class="tab" id="tab-days" href="#/">每日总结</a>
+      <a class="tab" id="tab-presets" href="#/presets">预设看板<span class="cnt" id="opencnt"></span></a>
+    </nav>
+    <label class="search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input id="q" type="search" placeholder="搜全部总结:英伟达、止盈、S20261103…" autocomplete="off" aria-label="搜索全部总结"></label>
+    <div class="tools">
+      <button type="button" class="iconbtn" id="btn-ts" title="显示或隐藏直播进度时间和事件号" aria-pressed="true">进度时间</button>
+      <button type="button" class="iconbtn" id="btn-theme" title="切换主题:跟随系统 / 浅色 / 深色">◐ 自动</button>
+    </div>
+  </div>
+</header>
+<div class="wrap">
+  <aside id="days" aria-label="场次"></aside>
+  <main id="view"></main>
+</div>
+<div class="pop" id="pop" role="dialog" aria-live="polite"></div>
+<script id="data" type="application/json">/*__DATA__*/</script>
+<script>
+(function(){
+'use strict';
+const D = JSON.parse(document.getElementById('data').textContent);
+const DAYS = D.days.slice().sort((a, b) => b.date.localeCompare(a.date));
+const RULES = D.rules || {}, PRESETS = D.presets || [];
+const BYDATE = new Map(DAYS.map(d => [d.date, d]));
+const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
+const store = {get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+               set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }};
+const view = $('#view'), side = $('#days'), pop = $('#pop');
+const md = d => { const [, m, dd] = d.split('-'); return `${+m}/${+dd}`; };
+
+let bid = 0;
+for (const d of DAYS) for (const s of d.sections) {
+  s.blocks.forEach(b => b.id = 'b' + (bid++));
+  s.subs.forEach(u => { u.id = 'b' + (bid++); u.blocks.forEach(b => b.id = 'b' + (bid++)); });
+}
+
+/* ---------- 行内格式:粗体、原话、进度时间、事件号、预设号、理念编号 ---------- */
+const TS1 = String.raw`(?:\d{2}-\d{2} )?\d{1,2}:\d{2}:\d{2}(?:[–~-]\d{1,2}:\d{2}:\d{2})?`;
+const RX = new RegExp([
+  String.raw`\*\*(.+?)\*\*`,
+  String.raw`「([^「」]*)」`,
+  String.raw`[((]((?:\s*(?:${TS1}|E\d{5})\s*[;;,,、]?)+)[))]`,
+  `(${TS1})`,
+  String.raw`(S\d{8}-\d{2})`,
+  String.raw`(?<![A-Za-z0-9])(E\d{5})(?!\d)`,
+  String.raw`〔([^〕]{1,16})〕`,
+  String.raw`(?<![A-Za-z0-9])([A-Z]{1,2}\d{1,3})(?!\d)`,
+].join('|'), 'g');
+let CUR = null;
+const clock = x => { x = ((x % 1440) + 1440) % 1440; return Math.floor(x / 60) + ':' + String(x % 60).padStart(2, '0'); };
+function tsTitle(t) {
+  if (!CUR || !CUR.start || /^\d{2}-\d{2} /.test(t)) return '直播进度(开播后多久)';
+  const m = t.match(/(\d{1,2}):(\d{2}):(\d{2})/), x = CUR.start.et + (+m[1]) * 60 + (+m[2]);
+  return `直播进度 ${m[0]},约美东 ${clock(x)} / 北京 ${clock(x + CUR.start.off * 60)}`;
+}
+const tsSpan = t => `<span class="ts" title="${esc(tsTitle(t))}">${esc(t)}</span>`;
+const eidSpan = e => `<span class="eid" title="事件号,可用 why.py --event ${e} 查">${e}</span>`;
+const ridSpan = id => RULES[id] ? `<button type="button" class="rid" data-rid="${id}" title="${esc(RULES[id].n || '')}">${id}</button>` : esc(id);
+function inl(s) {
+  s = String(s ?? '');
+  let out = '', last = 0;
+  for (const m of s.matchAll(RX)) {
+    out += esc(s.slice(last, m.index));
+    last = m.index + m[0].length;
+    if (m[1] !== undefined) out += `<strong>${inl(m[1])}</strong>`;
+    else if (m[2] !== undefined) out += `<span class="q">「${esc(m[2])}」</span>`;
+    else if (m[3] !== undefined) out += '<span class="tsg">' + m[3].split(/[;;,,、]/).map(x => x.trim()).filter(Boolean)
+      .map(x => /^E\d{5}$/.test(x) ? eidSpan(x) : tsSpan(x)).join('') + '</span>';
+    else if (m[4] !== undefined) out += tsSpan(m[4]);
+    else if (m[5] !== undefined) out += `<a class="pid" href="#/presets/${m[5]}" title="去预设看板">${m[5]}</a>`;
+    else if (m[6] !== undefined) out += eidSpan(m[6]);
+    else if (m[7] !== undefined) out += `<span class="tag">${esc(m[7])}</span>`;
+    else if (m[8] !== undefined) out += ridSpan(m[8]);
+  }
+  return out + esc(s.slice(last));
+}
+
+/* ---------- 各节的版式 ---------- */
+const LABEL = /^\*\*([^*]+)\*\*[::]\s*([\s\S]*)$/;
+function blk(b) {
+  const id = b.id ? ` id="${b.id}"` : '';
+  if (b.t === 'li') return `<li class="lvl${Math.min(b.lvl, 2)}"${id}>${inl(b.md)}</li>`;
+  const m = b.md.match(/^\*\*([^*]+)\*\*[::]?$/);
+  return m ? `<h4${id}>${inl(m[1])}</h4>` : `<p${id}>${inl(b.md)}</p>`;
+}
+function blocks(list) {
+  let h = '', ul = false;
+  for (const b of list) {
+    if (b.t === 'li' && !ul) { h += '<ul>'; ul = true; }
+    if (b.t !== 'li' && ul) { h += '</ul>'; ul = false; }
+    h += blk(b);
+  }
+  return h + (ul ? '</ul>' : '');
+}
+const subsHtml = s => s.subs.map(u => `<h3 id="${u.id}">${inl(u.title)}</h3>` + blocks(u.blocks)).join('');
+const generic = s => blocks(s.blocks) + subsHtml(s);
+
+function rBrief(s) {
+  const rows = s.blocks.map(b => {
+    const m = b.md.match(LABEL);
+    return m ? `<div class="row" id="${b.id}"><div class="lbl">${esc(m[1])}</div><div class="val">${inl(m[2])}</div></div>`
+             : `<div class="row one" id="${b.id}"><div class="val">${inl(b.md)}</div></div>`;
+  }).join('');
+  return `<div class="brief">${rows}</div>` + subsHtml(s);
+}
+
+const SCOPE = [[/^通用/, 'gen', '通用经验'], [/^(他本人|他自己)/, 'self', '他自己的做法'], [/^给听众/, 'aud', '给听众的']];
+function rLessons(s) {
+  if (!s.subs.length) return generic(s);
+  let h = blocks(s.blocks) + `<div class="ltools"><button type="button" class="iconbtn" data-act="lessons">全部展开</button></div>`;
+  for (const u of s.subs) {
+    const m = u.title.match(/^(\d+(?:\.\d+)?)\s*(.*?)\s*([((][^()()]*\d{1,2}:\d{2}:\d{2}[^()()]*[))])?\s*$/);
+    const num = m ? m[1] : '', title = m ? m[2] : u.title, times = m && m[3] ? m[3] : '';
+    const body = [], foot = [];
+    let quote = '', scope = null, contra = false;
+    for (const b of u.blocks) {
+      const sc = b.t === 'p' && SCOPE.find(x => x[0].test(b.md));
+      if (b.t === 'li' && /^「/.test(b.md)) quote += `<blockquote class="keyq" id="${b.id}">${inl(b.md)}</blockquote>`;
+      else if (sc) {
+        scope = scope || sc;
+        const c = /相反/.test(b.md); contra = contra || c;
+        foot.push(`<p class="refs${c ? ' contra' : ''}" id="${b.id}">${inl(b.md)}</p>`);
+      } else body.push(b);
+    }
+    if (!scope) {
+      const all = u.blocks.map(b => b.md).join(' ');
+      const mm = all.match(/[。;]\s*(通用|他本人|他自己|给听众)/);
+      if (mm) scope = SCOPE.find(x => x[0].test(mm[1]));
+      contra = contra || /与 ?[A-Z]{1,2}\d{1,3} ?相反/.test(all);
+    }
+    const badges = (scope ? `<span class="scope s-${scope[1]}">${scope[2]}</span>` : '') +
+                   (contra ? '<span class="scope s-contra" title="和台账里的说法相反,见本条末尾">与台账相反</span>' : '');
+    h += `<details class="lesson" id="${u.id}"><summary>${num ? `<span class="num">${num}</span>` : ''}<span class="lt">${inl(title)}</span>` +
+         `<span class="badges">${badges}</span></summary><div class="lbody">${blocks(body)}${quote}${foot.join('')}` +
+         `${times ? `<p class="times">讲到的位置 ${inl(times)}</p>` : ''}</div></details>`;
+  }
+  return h;
+}
+
+function rCards(s) {
+  let h = '', cards = [];
+  const flush = () => { if (cards.length) { h += `<div class="cards">${cards.join('')}</div>`; cards = []; } };
+  for (const b of s.blocks) {
+    if (b.t !== 'li') { flush(); h += blk(b); continue; }
+    const parts = b.md.split(/(?<=[。;;!?!?])\s*(?=\*\*)/).map(x => x.match(/^((?:\*\*[^*]+\*\*[、和与及/\s]*)+)[::]\s*([\s\S]*)$/));
+    if (parts.some(x => !x)) { cards.push(`<div class="card wide" id="${b.id}">${inl(b.md)}</div>`); continue; }
+    parts.forEach((m, k) => cards.push(`<div class="card"${k ? '' : ` id="${b.id}"`}><div class="name">${inl(m[1].replace(/[、和与及/\s]+$/, ''))}</div><div>${inl(m[2])}</div></div>`));
+  }
+  flush();
+  return h + subsHtml(s);
+}
+
+function rTimeline(s) {
+  const items = s.blocks.map(b => {
+    const m = b.md.match(LABEL);
+    if (!m) return `<div class="ti" id="${b.id}"><div class="when"></div><div class="what">${inl(b.md)}</div></div>`;
+    const w = m[1].match(/美东\s*([\d:]+)\s*\/\s*北京\s*([\d:]+)\s*(?:[((](?:进度\s*)?([\d:]+)[))])?/);
+    const when = w ? `<div class="et"><small>美东</small>${w[1]}</div><div class="bj">北京 ${w[2]}</div>${w[3] ? `<div class="pg">进度 ${w[3]}</div>` : ''}`
+                   : `<div class="et2">${inl(m[1])}</div>`;
+    return `<div class="ti" id="${b.id}"><div class="when">${when}</div><div class="what">${inl(m[2])}</div></div>`;
+  }).join('');
+  return `<div class="tl">${items}</div>` + subsHtml(s);
+}
+const R = {brief: rBrief, lessons: rLessons, assets: rCards, people: rCards, timeline: rTimeline};
+
+/* ---------- 视图 ---------- */
+let RENDERED = {}, HL = null, HLB = null, IO = null, LASTDAY = null;
+function renderSide() {
+  side.innerHTML = `<div class="sidehead">${DAYS.length} 场 · 新的在上</div>` + DAYS.map(d =>
+    `<a class="day" href="#/${d.date}" data-date="${d.date}"><div class="dd">${md(d.date)}<span>${d.wd}</span>${d.fmt === 'v1' ? '<i class="old">旧格式</i>' : ''}</div>` +
+    `<div class="hl">${esc(d.headline)}</div></a>`).join('');
+}
+function sideActive(date) {
+  $$('.day', side).forEach(a => a.classList.toggle('on', a.dataset.date === date));
+  const on = $('.day.on', side);
+  if (!on) return;
+  if (side.scrollWidth > side.clientWidth + 4) side.scrollLeft = on.offsetLeft - 16;
+  else if (on.offsetTop < side.scrollTop || on.offsetTop > side.scrollTop + side.clientHeight - 60) side.scrollTop = on.offsetTop - 80;
+}
+function setTab(t) {
+  $('#tab-days').classList.toggle('on', t === 'days');
+  $('#tab-presets').classList.toggle('on', t === 'presets');
+}
+const disc = () => `<p class="disc">${esc(D.note)}</p>`;
+
+function renderDay(day, secId) {
+  CUR = day;
+  const i = DAYS.indexOf(day), older = DAYS[i + 1], newer = DAYS[i - 1];
+  const [y, mo, dd] = day.date.split('-');
+  const nav = day.sections.map(s => `<a href="#/${day.date}/s${s.n}" data-s="s${s.n}">${esc(s.short)}</a>`).join('');
+  const secs = day.sections.map(s => `<section class="sec k-${s.kind}" id="s${s.n}"><h2><span class="sn">${s.n}</span>${esc(s.title)}</h2>` +
+    `${(R[s.kind] || generic)(s)}</section>`).join('');
+  view.innerHTML = `<article><div class="dayhead"><h1>${+mo}月${+dd}日<span class="wd">${day.wd} · ${y}</span>` +
+    `${day.fmt === 'v1' ? '<span class="tag">旧格式</span>' : ''}</h1><p class="meta">${inl(day.meta)}</p>${disc()}</div>` +
+    `<nav class="secnav" aria-label="本场各节">${nav}</nav>${secs}` +
+    `<div class="pager">${older ? `<a href="#/${older.date}" rel="prev">← ${md(older.date)} ${older.wd}</a>` : '<span></span>'}` +
+    `${newer ? `<a href="#/${newer.date}" rel="next">${md(newer.date)} ${newer.wd} →</a>` : '<span></span>'}</div>` +
+    `<p class="foot">来源 data/daily/${esc(day.stem)}.md · 约 ${day.chars.toLocaleString()} 字 · 网页生成于 ${esc(D.generated)}</p></article>`;
+  CUR = null;
+  sideActive(day.date);
+  observe();
+  if (HL) {
+    markAll(view, HL);
+    const tgt = (HLB && document.getElementById(HLB)) || $('mark', view);
+    if (tgt) { const d = tgt.closest('details'); if (d) d.open = true; (tgt.closest('[id]') || tgt).scrollIntoView({block: 'center'}); }
+    HL = HLB = null;
+  } else if (secId && document.getElementById(secId)) document.getElementById(secId).scrollIntoView();
+  else window.scrollTo(0, 0);
+}
+function observe() {
+  if (IO) IO.disconnect();
+  const nav = $('.secnav'), chips = $$('.secnav a');
+  if (!nav || !('IntersectionObserver' in window)) return;
+  const vis = new Set();
+  IO = new IntersectionObserver(es => {
+    es.forEach(e => e.isIntersecting ? vis.add(e.target.id) : vis.delete(e.target.id));
+    const top = $$('.sec', view).find(s => vis.has(s.id));
+    if (!top) return;
+    chips.forEach(c => c.classList.toggle('on', c.dataset.s === top.id));
+    const on = chips.find(c => c.dataset.s === top.id);
+    if (on) nav.scrollLeft = on.offsetLeft - nav.clientWidth / 3;
+  }, {rootMargin: `-${$('header.top').offsetHeight + 70}px 0px -55% 0px`});
+  $$('.sec', view).forEach(s => IO.observe(s));
+}
+
+const STC = {'待触发': 'pend', '已触发-照做': 'ok', '已触发-没做': 'grey', '改口': 'blue', '作废': 'void', '过期': 'void'};
+const PF = {st: 'open', tk: ''};
+const stBadge = s => `<span class="st st-${STC[s] || 'grey'}">${esc(s)}</span>`;
+const dayLink = d => BYDATE.has(d) ? `<a href="#/${d}">${md(d)}</a>` : esc(d ? md(d) : '');
+// 同一标的的预设归到一组;「SOXS/UVXY」这类组合按第一个代码归组,筛选按单个代码匹配
+const PALIAS = {'黄金': 'GLD'}, PNAME = {UNKNOWN: '大盘 · 没说标的', GLD: 'GLD · 黄金'};
+const ptoks = p => [...new Set((p.ticker || 'UNKNOWN').split('/').map(s => s.trim()).filter(Boolean).map(s => PALIAS[s] || s))];
+const pkey = p => ptoks(p)[0] || 'UNKNOWN';
+const plabel = k => PNAME[k] || k;
+const plast = p => { const h = p.history || []; return (h.length ? h[h.length - 1].date : '') || p.first || ''; };
+function pcard(p) {
+  CUR = BYDATE.get(p.first) || null;
+  const h = p.history || [], first = h[0] || p;
+  const hist = h.length > 1 ? `<ol class="hist">${h.map(x => `<li><span class="hd">${dayLink(x.date)}</span>${stBadge(x.status)} ${inl(x.note || '')}` +
+    `${x.quote ? ` <span class="q">「${esc(x.quote)}」</span>` : ''}</li>`).join('')}</ol>` : (p.note ? `<p class="refs">${inl(p.note)}</p>` : '');
+  const combo = ptoks(p).length > 1 ? `<span class="tk2">${esc(p.ticker)}</span>` : '';
+  const html = `<div class="pcard" id="p-${esc(p.preset_id)}"><div class="ptop">${combo}` +
+    `<span class="kind">${esc(p.kind || '')}</span>${stBadge(p.status)}<span class="pidl">${esc(p.preset_id)}</span>` +
+    `<span class="pfrom">${dayLink(p.first)} 设${p.t ? ' ' + tsSpan(p.t) : ''}</span></div>` +
+    `<div class="prow"><span class="lbl">条件</span><div>${inl(p.condition || '')}</div></div>` +
+    `<div class="prow"><span class="lbl">动作</span><div>${inl(p.action || '')}</div></div>` +
+    `${first.quote ? `<div class="pq">「${esc(first.quote)}」</div>` : ''}${hist}</div>`;
+  CUR = null;
+  return html;
+}
+function renderPresets(focus) {
+  if (focus) { PF.st = 'all'; PF.tk = ''; }
+  const nOpen = PRESETS.filter(p => p.status === '待触发').length;
+  const tks = [...new Set(PRESETS.flatMap(ptoks))].sort((a, b) => (a === 'UNKNOWN') - (b === 'UNKNOWN') || a.localeCompare(b));
+  const list = PRESETS.slice()
+    .sort((a, b) => (b.first || '').localeCompare(a.first || '') || a.preset_id.localeCompare(b.preset_id))
+    .filter(p => (PF.st === 'all' || (PF.st === 'open') === (p.status === '待触发')) && (!PF.tk || ptoks(p).includes(PF.tk)));
+  const groups = new Map();
+  list.forEach(p => { const k = pkey(p); if (!groups.has(k)) groups.set(k, []); groups.get(k).push(p); });
+  const gl = p => p.reduce((m, x) => plast(x) > m ? plast(x) : m, '');
+  const gord = [...groups.entries()].sort((a, b) => gl(b[1]).localeCompare(gl(a[1])) || a[0].localeCompare(b[0]));
+  const gcount = k => { const all = PRESETS.filter(p => pkey(p) === k), o = all.filter(p => p.status === '待触发').length;
+    return [o ? `待触发 ${o}` : '', all.length - o ? `已了结 ${all.length - o}` : ''].filter(Boolean).join(' · '); };
+  const body = gord.map(([k, ps]) => `<section class="pgroup"><div class="pgh"><span class="tk">${esc(plabel(k))}</span>` +
+    `<span class="pgc">${gcount(k)}</span></div>${ps.map(pcard).join('')}</section>`).join('');
+  const chips = [['open', `待触发 ${nOpen}`], ['closed', `已了结 ${PRESETS.length - nOpen}`], ['all', `全部 ${PRESETS.length}`]]
+    .map(([k, l]) => `<button type="button" class="fchip${PF.st === k ? ' on' : ''}" data-pf="${k}">${l}</button>`).join('');
+  view.innerHTML = `<article><div class="dayhead"><h1>预设看板</h1><p class="meta">他自己说出来、带具体条件的计划:进场、加仓、止盈、止损、认错条件。` +
+    `每场总结第 9 节登记;之后哪一场了结了(照做、没做、改口、作废、过期),就在这里追加一行。</p>${disc()}</div>` +
+    `<div class="filters" role="group" aria-label="筛选">${chips}<select id="ptk" aria-label="按标的筛选"><option value="">全部标的</option>` +
+    `${tks.map(t => `<option value="${esc(t)}"${t === PF.tk ? ' selected' : ''}>${esc(plabel(t))}</option>`).join('')}</select></div>` +
+    `${body || '<p class="empty">没有符合条件的预设。</p>'}</article>`;
+  sideActive(null);
+  if (focus) {
+    const el = document.getElementById('p-' + focus);
+    if (el) { el.scrollIntoView({block: 'center'}); el.classList.add('flash'); }
+  } else window.scrollTo(0, 0);
+}
+
+const reEsc = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+const terms = q => q.trim().split(/\s+/).filter(Boolean);
+function markAll(root, q) {
+  const ts = terms(q);
+  if (!ts.length) return;
+  const rx = new RegExp(ts.map(reEsc).join('|'), 'gi'), test = new RegExp(rx.source, 'i');
+  const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT), nodes = [];
+  while (w.nextNode()) nodes.push(w.currentNode);
+  for (const n of nodes) {
+    const t = n.nodeValue;
+    if (!test.test(t)) continue;
+    const f = document.createDocumentFragment();
+    let last = 0;
+    t.replace(rx, (m, off) => { f.append(t.slice(last, off)); const k = document.createElement('mark'); k.textContent = m; f.append(k); last = off + m.length; return m; });
+    f.append(t.slice(last));
+    n.replaceWith(f);
+  }
+  $$('mark', root).forEach(m => { const d = m.closest('details'); if (d) d.open = true; });
+}
+function snippet(txt, ts) {
+  const low = txt.toLowerCase(), at = Math.max(0, low.indexOf(ts[0].toLowerCase()));
+  const a = Math.max(0, at - 50), b = Math.min(txt.length, at + 90);
+  let s = esc((a ? '…' : '') + txt.slice(a, b) + (b < txt.length ? '…' : ''));
+  return s.replace(new RegExp(ts.map(t => reEsc(esc(t))).join('|'), 'gi'), m => `<mark>${m}</mark>`);
+}
+function renderSearch(q) {
+  const ts = terms(q), lows = ts.map(t => t.toLowerCase());
+  let total = 0, html = '';
+  for (const d of DAYS) {
+    const hits = [];
+    for (const s of d.sections) {
+      const all = s.blocks.map(b => [b, s.short]).concat(...s.subs.map(u => [[{id: u.id, md: u.title}, s.short], ...u.blocks.map(b => [b, s.short + ' · ' + u.title.replace(/[((].*$/, '')])]));
+      for (const [b, where] of all) {
+        const txt = b.md.replace(/\*\*/g, ''), low = txt.toLowerCase();
+        if (lows.every(t => low.includes(t))) hits.push({b, where, txt});
+      }
+    }
+    if (!hits.length) continue;
+    total += hits.length;
+    html += `<div class="hitday">${md(d.date)} ${d.wd}<span>${hits.length} 处</span></div>` + hits.slice(0, 30).map(h =>
+      `<a class="hit" href="#/${d.date}" data-b="${h.b.id}"><span class="where">${esc(h.where)}</span>${snippet(h.txt, ts)}</a>`).join('') +
+      (hits.length > 30 ? `<p class="refs">还有 ${hits.length - 30} 处,打开这一场看全部。</p>` : '');
+  }
+  view.innerHTML = `<article><div class="dayhead"><h1>搜索 <span class="q">「${esc(q)}」</span></h1><p class="meta">` +
+    `${total ? `${total} 处 · 点一条跳到那一场,关键词会高亮` : '没有找到。可以换个说法,或者用空格分开多个词(同时包含)。'}</p></div>${html}</article>`;
+  sideActive(null);
+  window.scrollTo(0, 0);
+}
+
+function route() {
+  hidePop();
+  const h = decodeURIComponent(location.hash.replace(/^#\/?/, '')), parts = h.split('/');
+  if (parts[0] === 'presets') { setTab('presets'); RENDERED = {v: 'presets'}; renderPresets(parts[1]); return; }
+  setTab('days');
+  if (parts[0] === 'q') {
+    const q = parts.slice(1).join('/');
+    if ($('#q').value !== q) $('#q').value = q;
+    RENDERED = {v: 'q'};
+    q.trim() ? renderSearch(q) : renderDay(BYDATE.get(LASTDAY) || DAYS[0]);
+    return;
+  }
+  const day = BYDATE.get(parts[0]) || DAYS[0], sec = parts[1];
+  if (RENDERED.v === 'day' && RENDERED.date === day.date && !HL) {
+    if (sec && document.getElementById(sec)) document.getElementById(sec).scrollIntoView();
+    return;
+  }
+  RENDERED = {v: 'day', date: day.date};
+  LASTDAY = day.date;
+  renderDay(day, sec);
+}
+
+/* ---------- 交互 ---------- */
+function showPop(el) {
+  const id = el.dataset.rid, r = RULES[id];
+  if (!r) return;
+  pop.innerHTML = `<div class="ph"><span class="rid">${id}</span>${esc(r.n || '')}${r.st ? `<span class="tag">${esc(r.st)}</span>` : ''}</div>` +
+    `${r.s ? `<p>${esc(r.s)}</p>` : ''}<p class="pf">理念台账 v2 编号 · brant-why 里查:why.py --idea ${id}</p>`;
+  pop.classList.add('show');
+  const b = el.getBoundingClientRect(), pw = pop.offsetWidth, ph = pop.offsetHeight;
+  pop.style.left = Math.max(12, Math.min(window.innerWidth - pw - 12, b.left - 12)) + 'px';
+  pop.style.top = (b.bottom + ph + 12 < window.innerHeight ? b.bottom + 6 : Math.max(12, b.top - ph - 6)) + 'px';
+}
+function hidePop() { pop.classList.remove('show'); }
+document.addEventListener('click', e => {
+  const r = e.target.closest('.rid[data-rid]');
+  if (r) { e.preventDefault(); showPop(r); return; }
+  if (!e.target.closest('.pop')) hidePop();
+  const act = e.target.closest('[data-act="lessons"]');
+  if (act) {
+    const ds = $$('.lesson', act.closest('.sec')), open = !ds.every(d => d.open);
+    ds.forEach(d => d.open = open);
+    act.textContent = open ? '全部收起' : '全部展开';
+    return;
+  }
+  const f = e.target.closest('[data-pf]');
+  if (f) { PF.st = f.dataset.pf; renderPresets(); return; }
+  const hit = e.target.closest('.hit');
+  if (hit) {
+    e.preventDefault();
+    HL = $('#q').value; HLB = hit.dataset.b;
+    const target = hit.getAttribute('href');
+    RENDERED = {};
+    if (location.hash === target) route(); else location.hash = target;
+  }
+});
+document.addEventListener('change', e => { if (e.target.id === 'ptk') { PF.tk = e.target.value; renderPresets(); } });
+window.addEventListener('scroll', hidePop, {passive: true});
+window.addEventListener('resize', () => { hidePop(); setHH(); });
+window.addEventListener('hashchange', route);
+
+let qt = null;
+$('#q').addEventListener('input', e => {
+  clearTimeout(qt);
+  qt = setTimeout(() => {
+    const v = e.target.value;
+    const target = v.trim() ? '#/q/' + encodeURIComponent(v) : '#/' + (LASTDAY || DAYS[0].date);
+    if (RENDERED.v === 'q' && v.trim()) { history.replaceState(null, '', target); route(); }
+    else location.hash = target;
+  }, 220);
+});
+$('#q').addEventListener('keydown', e => { if (e.key === 'Escape') { e.target.value = ''; e.target.dispatchEvent(new Event('input')); e.target.blur(); } });
+document.addEventListener('keydown', e => {
+  if (e.target.matches('input,select,textarea') || e.metaKey || e.ctrlKey || e.altKey) return;
+  if (e.key === '/') { e.preventDefault(); $('#q').focus(); return; }
+  if (e.key === 'Escape') { hidePop(); return; }
+  if (RENDERED.v !== 'day' || (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight')) return;
+  const i = DAYS.findIndex(d => d.date === RENDERED.date), j = e.key === 'ArrowLeft' ? i + 1 : i - 1;
+  if (DAYS[j]) location.hash = '#/' + DAYS[j].date;
+});
+
+const THEMES = ['auto', 'light', 'dark'], TLABEL = {auto: '◐ 自动', light: '☀ 浅色', dark: '☾ 深色'};
+function applyTheme(t) {
+  if (t === 'auto') delete document.documentElement.dataset.theme; else document.documentElement.dataset.theme = t;
+  $('#btn-theme').textContent = TLABEL[t];
+}
+let theme = THEMES.includes(store.get('bl-theme')) ? store.get('bl-theme') : 'auto';
+applyTheme(theme);
+$('#btn-theme').addEventListener('click', () => { theme = THEMES[(THEMES.indexOf(theme) + 1) % 3]; store.set('bl-theme', theme); applyTheme(theme); });
+function applyTs(hide) { document.body.classList.toggle('nots', hide); $('#btn-ts').setAttribute('aria-pressed', String(!hide)); }
+let hideTs = store.get('bl-nots') === '1';
+applyTs(hideTs);
+$('#btn-ts').addEventListener('click', () => { hideTs = !hideTs; store.set('bl-nots', hideTs ? '1' : '0'); applyTs(hideTs); });
+
+function setHH() { document.documentElement.style.setProperty('--hh', $('header.top').offsetHeight + 'px'); }
+setHH();
+$('#brandsub').textContent = `${DAYS.length} 场 · 截至 ${md(DAYS[0].date)}`;
+$('#opencnt').textContent = PRESETS.filter(p => p.status === '待触发').length || '';
+renderSide();
+route();
+})();
+</script>
+</body>
+</html>
