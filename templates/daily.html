@@ -113,7 +113,15 @@ article{max-width:790px}
 .pid{font:600 11.5px/1.4 ui-monospace,SFMono-Regular,Consolas,monospace;color:var(--pend);background:var(--pend-bg);border-radius:4px;padding:1px 5px;text-decoration:none;white-space:nowrap;vertical-align:1px}
 .tag{font-size:11.5px;color:var(--muted);background:var(--chip);border-radius:4px;padding:1px 6px;margin:0 2px;white-space:nowrap;font-weight:400}
 mark{background:var(--mark);color:inherit;border-radius:2px;padding:0 1px}
-body.nots .ts,body.nots .tsg,body.nots .eid,body.nots .times{display:none}
+.src{font:11px/1.4 ui-monospace,SFMono-Regular,Consolas,monospace;color:var(--faint);background:var(--chip);border-radius:4px;padding:1px 5px;margin:0 2px;white-space:nowrap;vertical-align:1px;cursor:help}
+body.nots .ts,body.nots .tsg,body.nots .eid,body.nots .times,body.nots .src{display:none}
+.ecard{display:block;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 18px;margin:14px 0;color:inherit;text-decoration:none}
+.ecard:hover{border-color:var(--faint)}
+.ecard h2{font-size:18px;line-height:1.5;margin:0}
+.ecard .em{font-size:12.5px;color:var(--muted);margin-top:6px}
+.ecard p{margin:10px 0 0;font-size:14.5px;line-height:1.8}
+.essay .sec p,.essay .sec li{font-size:15.5px;line-height:1.9}
+.essay .dayhead h1{font-size:25px}
 
 /* 速览 */
 .brief{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:4px 20px;box-shadow:var(--shadow)}
@@ -247,10 +255,11 @@ body.nots .ts,body.nots .tsg,body.nots .eid,body.nots .times{display:none}
     <a class="brand" href="#/">__TITLE__<small id="brandsub"></small></a>
     <nav class="tabs" aria-label="视图">
       <a class="tab" id="tab-days" href="#/">每日总结</a>
+      <a class="tab" id="tab-essays" href="#/essays">心路历程<span class="cnt" id="esscnt"></span></a>
       <a class="tab" id="tab-presets" href="#/presets">预设看板<span class="cnt" id="opencnt"></span></a>
     </nav>
     <label class="search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-      <input id="q" type="search" placeholder="搜全部总结:英伟达、止盈、S20261103…" autocomplete="off" aria-label="搜索全部总结"></label>
+      <input id="q" type="search" placeholder="搜总结和文章:英伟达、止盈、恒大…" autocomplete="off" aria-label="搜索全部总结和文章"></label>
     <div class="tools">
       <button type="button" class="iconbtn" id="btn-ts" title="显示或隐藏直播进度时间和事件号" aria-pressed="true">进度时间</button>
       <button type="button" class="iconbtn" id="btn-theme" title="切换主题:跟随系统 / 浅色 / 深色">◐ 自动</button>
@@ -270,6 +279,7 @@ const D = JSON.parse(document.getElementById('data').textContent);
 const DAYS = D.days.slice().sort((a, b) => b.date.localeCompare(a.date));
 const RULES = D.rules || {}, PRESETS = D.presets || [];
 const BYDATE = new Map(DAYS.map(d => [d.date, d]));
+const ESSAYS = D.essays || [], BYSLUG = new Map(ESSAYS.map(e => [e.slug, e]));
 const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
 const store = {get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
@@ -278,7 +288,7 @@ const view = $('#view'), side = $('#days'), pop = $('#pop');
 const md = d => { const [, m, dd] = d.split('-'); return `${+m}/${+dd}`; };
 
 let bid = 0;
-for (const d of DAYS) for (const s of d.sections) {
+for (const d of DAYS.concat(ESSAYS)) for (const s of d.sections) {
   s.blocks.forEach(b => b.id = 'b' + (bid++));
   s.subs.forEach(u => { u.id = 'b' + (bid++); u.blocks.forEach(b => b.id = 'b' + (bid++)); });
 }
@@ -294,7 +304,14 @@ const RX = new RegExp([
   String.raw`(?<![A-Za-z0-9])(E\d{5})(?!\d)`,
   String.raw`〔([^〕]{1,16})〕`,
   String.raw`(?<![A-Za-z0-9])([A-Z]{1,2}\d{1,3})(?!\d)`,
+  String.raw`\[\[([^\]]{4,80})\]\]`,
 ].join('|'), 'g');
+// 出处 [[20250509_7ZMWXJgEf9Q#26]](场次#卡号)或 [[20240924_mtaD4yBJRZI 00:27:41]](场次 + 直播进度)
+function srcSpan(s) {
+  const m = s.match(/^(\d{4})(\d{2})(\d{2})_[^#\s]+(?:#(\d+)| (\d{1,2}:\d{2}:\d{2}))?$/);
+  const txt = m ? `${m[1]}-${m[2]}-${m[3]}${m[4] ? ' #' + m[4] : m[5] ? ' ' + m[5] : ''}` : s;
+  return `<span class="src" title="出处 ${esc(s)}(${m && m[5] ? '直播场次 + 直播进度' : '直播场次#卡号'})">${esc(txt)}</span>`;
+}
 let CUR = null;
 const clock = x => { x = ((x % 1440) + 1440) % 1440; return Math.floor(x / 60) + ':' + String(x % 60).padStart(2, '0'); };
 function tsTitle(t) {
@@ -320,6 +337,7 @@ function inl(s) {
     else if (m[6] !== undefined) out += eidSpan(m[6]);
     else if (m[7] !== undefined) out += `<span class="tag">${esc(m[7])}</span>`;
     else if (m[8] !== undefined) out += ridSpan(m[8]);
+    else if (m[9] !== undefined) out += srcSpan(m[9]);
   }
   return out + esc(s.slice(last));
 }
@@ -414,10 +432,17 @@ const R = {brief: rBrief, lessons: rLessons, assets: rCards, people: rCards, tim
 
 /* ---------- 视图 ---------- */
 let RENDERED = {}, HL = null, HLB = null, IO = null, LASTDAY = null;
-function renderSide() {
-  side.innerHTML = `<div class="sidehead">${DAYS.length} 场 · 新的在上</div>` + DAYS.map(d =>
-    `<a class="day" href="#/${d.date}" data-date="${d.date}"><div class="dd">${md(d.date)}<span>${d.wd}</span>${d.fmt === 'v1' ? '<i class="old">旧格式</i>' : ''}</div>` +
-    `<div class="hl">${esc(d.headline)}</div></a>`).join('');
+let SIDE = '';
+function renderSide(mode = 'days') {
+  if (SIDE === mode) return;
+  SIDE = mode;
+  side.innerHTML = mode === 'essays'
+    ? `<div class="sidehead">${ESSAYS.length} 篇 · 按时期</div>` + ESSAYS.map(e =>
+      `<a class="day" href="#/essays/${e.slug}" data-date="${e.slug}"><div class="dd">${esc(e.period)}</div>` +
+      `<div class="hl">${esc(e.title.replace(/\*\*/g, ''))}</div></a>`).join('')
+    : `<div class="sidehead">${DAYS.length} 场 · 新的在上</div>` + DAYS.map(d =>
+      `<a class="day" href="#/${d.date}" data-date="${d.date}"><div class="dd">${md(d.date)}<span>${d.wd}</span>${d.fmt === 'v1' ? '<i class="old">旧格式</i>' : ''}</div>` +
+      `<div class="hl">${esc(d.headline)}</div></a>`).join('');
 }
 function sideActive(date) {
   $$('.day', side).forEach(a => a.classList.toggle('on', a.dataset.date === date));
@@ -428,9 +453,43 @@ function sideActive(date) {
 }
 function setTab(t) {
   $('#tab-days').classList.toggle('on', t === 'days');
+  $('#tab-essays').classList.toggle('on', t === 'essays');
   $('#tab-presets').classList.toggle('on', t === 'presets');
 }
 const disc = () => `<p class="disc">${esc(D.note)}</p>`;
+const discE = () => '<p class="disc">整理他过去怎么做、怎么想。原话出自直播逐字稿,标签是出处;账户金额和盈亏是他的自述,无法核实。这不是买卖建议。</p>';
+function afterRender(secId) {  // 搜索点进来时高亮并跳到那一条,否则跳到指定的节或回到顶部
+  if (HL) {
+    markAll(view, HL);
+    const tgt = (HLB && document.getElementById(HLB)) || $('mark', view);
+    if (tgt) { const d = tgt.closest('details'); if (d) d.open = true; (tgt.closest('[id]') || tgt).scrollIntoView({block: 'center'}); }
+    HL = HLB = null;
+  } else if (secId && document.getElementById(secId)) document.getElementById(secId).scrollIntoView();
+  else window.scrollTo(0, 0);
+}
+const emeta = e => `${esc(e.period)} · 写于 ${esc(e.written)} · 约 ${e.chars.toLocaleString()} 字`;
+function renderEssays() {
+  view.innerHTML = `<article><div class="dayhead"><h1>心路历程</h1><p class="meta">按时期或主题整理的长文:他当时怎么做、怎么想,后来怎么回头看。` +
+    `原话后面的小标签是出处(直播日期 #卡号,或日期 + 直播进度)。</p>${discE()}</div>` +
+    (ESSAYS.map(e => `<a class="ecard" href="#/essays/${e.slug}"><h2>${inl(e.title)}</h2><div class="em">${emeta(e)}</div>` +
+      `<p>${inl(e.summary)}</p></a>`).join('') || '<p class="empty">还没有文章。</p>') + '</article>';
+  sideActive(null);
+  window.scrollTo(0, 0);
+}
+function renderEssay(e, secId) {
+  const i = ESSAYS.indexOf(e), prev = ESSAYS[i - 1], next = ESSAYS[i + 1];
+  const nav = e.sections.map(s => `<a href="#/essays/${e.slug}/s${s.n}" data-s="s${s.n}">${esc(s.short)}</a>`).join('');
+  const secs = e.sections.map(s => `<section class="sec k-${s.kind}" id="s${s.n}"><h2>${esc(s.title)}</h2>` +
+    `${(R[s.kind] || generic)(s)}</section>`).join('');
+  view.innerHTML = `<article class="essay"><div class="dayhead"><h1>${inl(e.title)}</h1><p class="meta">${emeta(e)}</p>${discE()}</div>` +
+    `<nav class="secnav" aria-label="本文各节">${nav}</nav>${secs}` +
+    `<div class="pager">${prev ? `<a href="#/essays/${prev.slug}" rel="prev">← ${esc(prev.period)}</a>` : '<span></span>'}` +
+    `${next ? `<a href="#/essays/${next.slug}" rel="next">${esc(next.period)} →</a>` : '<span></span>'}</div>` +
+    `<p class="foot">来源 content/essays/${esc(e.slug)}.md · 网页生成于 ${esc(D.generated)}</p></article>`;
+  sideActive(e.slug);
+  observe();
+  afterRender(secId);
+}
 
 function renderDay(day, secId) {
   CUR = day;
@@ -448,13 +507,7 @@ function renderDay(day, secId) {
   CUR = null;
   sideActive(day.date);
   observe();
-  if (HL) {
-    markAll(view, HL);
-    const tgt = (HLB && document.getElementById(HLB)) || $('mark', view);
-    if (tgt) { const d = tgt.closest('details'); if (d) d.open = true; (tgt.closest('[id]') || tgt).scrollIntoView({block: 'center'}); }
-    HL = HLB = null;
-  } else if (secId && document.getElementById(secId)) document.getElementById(secId).scrollIntoView();
-  else window.scrollTo(0, 0);
+  afterRender(secId);
 }
 function observe() {
   if (IO) IO.disconnect();
@@ -554,20 +607,30 @@ function snippet(txt, ts) {
 function renderSearch(q) {
   const ts = terms(q), lows = ts.map(t => t.toLowerCase());
   let total = 0, html = '';
-  for (const d of DAYS) {
+  const collect = secs => {
     const hits = [];
-    for (const s of d.sections) {
+    for (const s of secs) {
       const all = s.blocks.map(b => [b, s.short]).concat(...s.subs.map(u => [[{id: u.id, md: u.title}, s.short], ...u.blocks.map(b => [b, s.short + ' · ' + u.title.replace(/[((].*$/, '')])]));
       for (const [b, where] of all) {
-        const txt = b.md.replace(/\*\*/g, ''), low = txt.toLowerCase();
+        const txt = b.md.replace(/\*\*/g, '').replace(/\[\[[^\]]*\]\]/g, ''), low = txt.toLowerCase();
         if (lows.every(t => low.includes(t))) hits.push({b, where, txt});
       }
     }
-    if (!hits.length) continue;
+    return hits;
+  };
+  const group = (head, href, hits, more) => {
     total += hits.length;
-    html += `<div class="hitday">${md(d.date)} ${d.wd}<span>${hits.length} 处</span></div>` + hits.slice(0, 30).map(h =>
-      `<a class="hit" href="#/${d.date}" data-b="${h.b.id}"><span class="where">${esc(h.where)}</span>${snippet(h.txt, ts)}</a>`).join('') +
-      (hits.length > 30 ? `<p class="refs">还有 ${hits.length - 30} 处,打开这一场看全部。</p>` : '');
+    return `<div class="hitday">${head}<span>${hits.length} 处</span></div>` + hits.slice(0, 30).map(h =>
+      `<a class="hit" href="${href}" data-b="${h.b.id}"><span class="where">${esc(h.where)}</span>${snippet(h.txt, ts)}</a>`).join('') +
+      (hits.length > 30 ? `<p class="refs">还有 ${hits.length - 30} 处,${more}看全部。</p>` : '');
+  };
+  for (const e of ESSAYS) {
+    const hits = collect(e.sections);
+    if (hits.length) html += group(`心路历程 · ${esc(e.title.replace(/\*\*/g, ''))}`, `#/essays/${e.slug}`, hits, '打开这篇');
+  }
+  for (const d of DAYS) {
+    const hits = collect(d.sections);
+    if (hits.length) html += group(`${md(d.date)} ${d.wd}`, `#/${d.date}`, hits, '打开这一场');
   }
   view.innerHTML = `<article><div class="dayhead"><h1>搜索 <span class="q">「${esc(q)}」</span></h1><p class="meta">` +
     `${total ? `${total} 处 · 点一条跳到那一场,关键词会高亮` : '没有找到。可以换个说法,或者用空格分开多个词(同时包含)。'}</p></div>${html}</article>`;
@@ -578,6 +641,20 @@ function renderSearch(q) {
 function route() {
   hidePop();
   const h = decodeURIComponent(location.hash.replace(/^#\/?/, '')), parts = h.split('/');
+  if (parts[0] === 'essays') {
+    setTab('essays');
+    renderSide('essays');
+    const e = BYSLUG.get(parts[1]), sec = parts[2];
+    if (!e) { RENDERED = {v: 'essays'}; renderEssays(); return; }
+    if (RENDERED.v === 'essay' && RENDERED.slug === e.slug && !HL) {
+      if (sec && document.getElementById(sec)) document.getElementById(sec).scrollIntoView();
+      return;
+    }
+    RENDERED = {v: 'essay', slug: e.slug};
+    renderEssay(e, sec);
+    return;
+  }
+  renderSide('days');
   if (parts[0] === 'presets') { setTab('presets'); RENDERED = {v: 'presets'}; renderPresets(parts[1]); return; }
   setTab('days');
   if (parts[0] === 'q') {
@@ -673,7 +750,8 @@ function setHH() { document.documentElement.style.setProperty('--hh', $('header.
 setHH();
 $('#brandsub').textContent = `${DAYS.length} 场 · 截至 ${md(DAYS[0].date)}`;
 $('#opencnt').textContent = PRESETS.filter(p => p.status === '待触发').length || '';
-renderSide();
+$('#esscnt').textContent = ESSAYS.length || '';
+if (!ESSAYS.length) $('#tab-essays').hidden = true;
 route();
 })();
 </script>
