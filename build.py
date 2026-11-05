@@ -19,6 +19,8 @@ import shutil
 import sys
 from pathlib import Path
 
+from enrich import enrich  # 每日总结各节拆结构 + 个股档案
+
 ROOT = Path(__file__).resolve().parent
 TPL = ROOT / 'templates' / 'daily.html'
 CONTENT = ROOT / 'content'
@@ -113,6 +115,7 @@ def main():
     if data.get('schema', SCHEMA) != SCHEMA:
         print(f'⚠ 数据 schema={data.get("schema")},本模板按 schema={SCHEMA} 写的,显示可能不全', file=sys.stderr)
     data['essays'] = essays
+    enrich(data)
 
     tpl = TPL.read_text(encoding='utf-8')
     if '/*__DATA__*/' not in tpl:

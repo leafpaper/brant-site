@@ -106,7 +106,7 @@ article{max-width:790px}
 
 /* 行内元素 */
 .q{color:var(--quote)}
-.ts{font:11.5px/1.4 ui-monospace,SFMono-Regular,Consolas,monospace;color:var(--faint);background:var(--chip);border-radius:4px;padding:1px 4px;margin:0 2px;white-space:nowrap;vertical-align:1px;cursor:help}
+.ts{font:11px/1.4 ui-monospace,SFMono-Regular,Consolas,monospace;color:var(--faint);border-radius:4px;padding:0 2px;margin:0 1px;white-space:nowrap;vertical-align:1px;cursor:help;opacity:.85}
 .eid{font:11px/1.4 ui-monospace,SFMono-Regular,Consolas,monospace;color:var(--faint);white-space:nowrap;margin:0 2px;cursor:help}
 .rid{font:600 11.5px/1.4 ui-monospace,SFMono-Regular,Consolas,monospace;color:var(--rid);background:var(--rid-bg);border:0;border-radius:4px;padding:1px 5px;margin:0 1px;cursor:pointer;vertical-align:1px}
 .rid:hover{text-decoration:underline}
@@ -247,6 +247,146 @@ body.nots .ts,body.nots .tsg,body.nots .eid,body.nots .times,body.nots .src{disp
   .prow{grid-template-columns:1fr;gap:0}
   .filters select{margin-left:0}
 }
+
+/* ===== 大方向时间线(发散色:看空蓝 ← 震荡灰 → 看多红;每格都写字,不只靠颜色) ===== */
+:root{--d-ss:#256abf;--d-s:#86b6ef;--d-z:#e4e2dc;--d-l:#ee9190;--d-ll:#b93534;--d-ss-i:#fff;--d-s-i:#14263d;--d-z-i:#4a4944;--d-l-i:#4a1716;--d-ll-i:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--d-ss:#5598e7;--d-s:#1c5cab;--d-z:#3a3a3d;--d-l:#a52f2e;--d-ll:#e66767;--d-ss-i:#0f1726;--d-s-i:#e6eefb;--d-z-i:#d6d4ce;--d-l-i:#fbe9e9;--d-ll-i:#2a0d0d}}
+:root[data-theme="dark"]{--d-ss:#5598e7;--d-s:#1c5cab;--d-z:#3a3a3d;--d-l:#a52f2e;--d-ll:#e66767;--d-ss-i:#0f1726;--d-s-i:#e6eefb;--d-z-i:#d6d4ce;--d-l-i:#fbe9e9;--d-ll-i:#2a0d0d}
+.dirbox{margin:16px 0 4px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 14px}
+.dirtop{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;font-size:13.5px}
+.dleg{display:flex;gap:10px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-left:auto}
+.dleg span{display:inline-flex;align-items:center;gap:4px}
+.sw{display:inline-block;width:12px;height:12px;border-radius:3px}
+.dirscroll{overflow-x:auto;margin:10px -4px 0;padding:2px 4px 4px}
+table.dir{border-collapse:separate;border-spacing:2px;font-size:11.5px}
+table.dir th{font-weight:500;color:var(--muted);white-space:nowrap;padding:0 3px}
+table.dir thead th{font-variant-numeric:tabular-nums;font-size:11px}
+table.dir thead th a{color:inherit;text-decoration:none}
+table.dir thead th.cur a{color:var(--text);font-weight:700}
+table.dir tbody th{text-align:right;padding-right:8px;font-size:12px;position:sticky;left:0;background:var(--surface);z-index:1}
+table.dir thead th:first-child{position:sticky;left:0;background:var(--surface);z-index:1}
+table.dir td{padding:0;min-width:34px;height:24px;border-radius:4px;text-align:center}
+table.dir td a{display:block;line-height:24px;text-decoration:none;color:inherit;font-weight:600}
+table.dir td.cur{outline:2px solid var(--text);outline-offset:0}
+.c-ss{background:var(--d-ss);color:var(--d-ss-i)}.c-s{background:var(--d-s);color:var(--d-s-i)}.c-z{background:var(--d-z);color:var(--d-z-i)}
+.c-l{background:var(--d-l);color:var(--d-l-i)}.c-ll{background:var(--d-ll);color:var(--d-ll-i)}
+.c-n{background:transparent;color:var(--faint);box-shadow:inset 0 0 0 1px var(--border)}
+.dtoday{display:flex;flex-wrap:wrap;gap:4px 18px;margin-top:10px;font-size:13px;line-height:1.6}
+.dtoday b{color:var(--muted);font-weight:600;margin-right:4px}
+.dtoday i{font-style:normal;color:var(--muted);margin-left:6px}
+.dnote{font-size:11.5px;color:var(--faint);margin:6px 0 0}
+/* ===== 心法:目录 + 卡片(原话 → 要点 → 对应理念) ===== */
+.ltop{display:flex;gap:12px;align-items:flex-start;margin:6px 0 14px}
+.ltoc{flex:1;margin:0;padding:10px 14px;list-style:none;background:var(--surface);border:1px solid var(--border);border-radius:12px;columns:2 300px;column-gap:28px}
+.ltoc li{break-inside:avoid;margin:3px 0;font-size:13.5px;line-height:1.55}
+.ltoc a{color:var(--text);text-decoration:none;display:flex;gap:7px;align-items:baseline}
+.ltoc a:hover{color:var(--accent)}
+.ltoc .tn{color:var(--faint);font-variant-numeric:tabular-nums;font-size:12px;min-width:2.3em}
+.dot{width:8px;height:8px;border-radius:50%;flex:none;align-self:center;background:var(--faint)}
+.d-gen{background:var(--ok)}.d-self{background:var(--blue)}.d-aud{background:var(--pend)}.d-contra{box-shadow:0 0 0 2px var(--surface),0 0 0 3.5px var(--warn)}
+.lcards{display:flex;flex-direction:column;gap:12px}
+.lcard{background:var(--surface);border:1px solid var(--border);border-left:4px solid var(--faint);border-radius:12px;padding:14px 18px 12px;scroll-margin-top:calc(var(--hh) + 64px)}
+.l-gen{border-left-color:var(--ok)}.l-self{border-left-color:var(--blue)}.l-aud{border-left-color:var(--pend)}
+.lcard header{display:flex;gap:10px;align-items:baseline}
+.lcard header .num{font:12px ui-monospace,SFMono-Regular,Consolas,monospace;color:var(--faint)}
+.lcard h3{margin:0;font-size:16.5px;line-height:1.5;flex:1}
+.lcard .badges{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end}
+.lsub{margin:3px 0 0;color:var(--muted);font-size:14px;line-height:1.6}
+.sep{margin:0 8px;color:var(--faint)}
+.lb .keyq{margin:12px 0 6px;font-size:15px;line-height:1.75}
+.pts{margin:8px 0 0;padding-left:1.25em}
+.pts li{margin:5px 0;line-height:1.75;font-size:15px}
+.pts li::marker{color:var(--faint)}
+.lrules{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:10px}
+.lrules .lbl,.lnote .lbl{font-size:12px;color:var(--faint);margin-right:6px}
+.rchip{display:inline-flex;gap:5px;align-items:baseline;font-size:12px;background:var(--rid-bg);color:var(--rid);border-radius:6px;padding:1px 8px;cursor:pointer;line-height:1.6}
+.rchip b{font:600 11.5px ui-monospace,SFMono-Regular,Consolas,monospace}
+.lnote{font-size:13px;color:var(--muted);margin:8px 0 0;line-height:1.7}
+.lcards.titles .lb,.lcards.titles .lsub{display:none}
+.lcards.titles{gap:6px}
+/* ===== 个股 / 对人 / 操作 / 账户:名称 | 内容 ===== */
+.ents{display:flex;flex-direction:column;gap:10px}
+.egroup{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.erow{display:grid;grid-template-columns:8.5em minmax(0,1fr);gap:14px;padding:9px 16px;border-top:1px solid var(--border);font-size:15px;line-height:1.7}
+.egroup .erow:first-child{border-top:0}
+.erow.wide{display:block;background:var(--surface);border:1px solid var(--border);border-radius:12px}
+.en{font-weight:650}
+.stc{display:inline-block;font-size:11.5px;font-weight:650;border-radius:4px;padding:0 6px;margin-right:7px;line-height:1.75;vertical-align:1px}
+.tlink{color:inherit;text-decoration:none;border-bottom:1px dashed var(--faint)}
+.tlink:hover{color:var(--accent);border-bottom-color:var(--accent)}
+.egrp{font-size:13px;color:var(--muted);margin:8px 0 -2px;font-weight:650}
+.muted{opacity:.75}
+/* ===== 变化:之前 → 今天 ===== */
+.chgs{display:flex;flex-direction:column;gap:10px}
+.chg{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 16px}
+.ch-h{display:flex;gap:8px;align-items:baseline;font-size:15px;margin-bottom:8px}
+.ctag{font-size:11.5px;color:var(--blue);background:var(--blue-bg);border-radius:999px;padding:0 8px;line-height:1.8;white-space:nowrap}
+.ch-b{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:10px;align-items:stretch}
+.ch-x{background:var(--surface2);border-radius:8px;padding:8px 12px;font-size:14.5px;line-height:1.7}
+.ch-x.now{background:var(--accent-bg)}
+.ch-x .lbl{display:block;font-size:11.5px;color:var(--faint);margin-bottom:2px}
+.ch-ar{align-self:center;color:var(--faint);font-size:18px}
+.ch-one{font-size:14.5px;line-height:1.7;color:var(--muted)}
+.chg.plain{font-size:14.5px;line-height:1.7}
+/* ===== 老毛病 ===== */
+.hint{font-size:12.5px;color:var(--faint);margin:0 0 8px}
+.miss{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px}
+.mis{background:var(--surface);border:1px solid var(--border);border-top:3px solid var(--faint);border-radius:12px;padding:11px 14px}
+.mis.like{border-top-color:var(--pend)}.mis.unlike{border-top-color:var(--ok)}
+.mh{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:6px}
+.mk{font-size:11.5px;font-weight:650;border-radius:999px;padding:0 8px;line-height:1.8;background:var(--grey-bg);color:var(--grey)}
+.like .mk{background:var(--pend-bg);color:var(--pend)}.unlike .mk{background:var(--ok-bg);color:var(--ok)}
+.mx{font-size:12px;color:var(--muted)}
+.mt{font-size:14.5px;line-height:1.7}
+/* ===== 本场预设 ===== */
+.dps h4{font-size:13.5px;color:var(--muted);margin:12px 0 6px;font-weight:650}
+.dps h4 small{font-weight:400;color:var(--faint);margin-left:8px;font-size:12px}
+.prw .pend{display:block;font-size:13px;color:var(--muted);margin-top:4px;line-height:1.6}
+.pid2{display:block;font:11px/1.6 ui-monospace,SFMono-Regular,Consolas,monospace;color:var(--faint);text-decoration:none}
+.pid2:hover{color:var(--accent)}
+.mraw{display:inline-block;margin-left:10px}
+.mraw summary{cursor:pointer;color:var(--faint);font-size:12px}
+.mraw[open]{display:block;margin:6px 0 0;font-size:12.5px;line-height:1.7}
+.prw{display:grid;grid-template-columns:7em 5.5em minmax(0,1fr) auto;gap:10px;align-items:baseline;padding:9px 14px;background:var(--surface);border:1px solid var(--border);border-radius:10px;margin:6px 0;color:inherit;text-decoration:none;font-size:14.5px;line-height:1.65}
+.prw:hover{border-color:var(--faint)}
+.ptk{font-weight:700;overflow-wrap:anywhere}
+.pk{font-size:12px;color:var(--muted)}
+.arr{color:var(--faint);font-weight:400;margin:0 2px}
+.dpx{margin-top:10px;font-size:13.5px;color:var(--muted)}
+details.raw,details.notes{margin-top:10px}
+details.raw summary,details.notes summary{cursor:pointer;color:var(--faint);font-size:12.5px}
+.sec>h2 small{font-size:12px;color:var(--faint);font-weight:400;margin-left:8px}
+/* ===== 个股档案 ===== */
+.tgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px;margin-top:16px}
+.ttile{display:block;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 14px;color:inherit;text-decoration:none}
+.ttile:hover{border-color:var(--faint)}
+.ttile .tn{font-weight:700;font-size:15px}
+.ttile .tm{font-size:12px;color:var(--muted);margin:3px 0 8px}
+.ttile .tm b{color:var(--pend);font-weight:600}
+.dots{display:flex;gap:3px;flex-wrap:nowrap}
+.dots i{width:7px;height:7px;border-radius:50%;background:var(--surface2);box-shadow:inset 0 0 0 1px var(--border)}
+.dots i.on{background:var(--accent);box-shadow:none}
+.dots.big{gap:5px;margin:12px 0 2px}.dots.big i{width:11px;height:11px}
+.th2{font-size:15px;margin:24px 0 6px}
+.tfew{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13.5px}
+.tfew a{color:var(--muted)}
+.tday{display:grid;grid-template-columns:5em minmax(0,1fr);gap:12px;padding:12px 0;border-top:1px solid var(--border)}
+.tdh{font-weight:700;color:var(--text);text-decoration:none;font-variant-numeric:tabular-nums}
+.tdh span{display:block;font-weight:400;font-size:12px;color:var(--muted)}
+.tit{display:flex;gap:8px;align-items:baseline;margin:0 0 8px;font-size:14.5px;line-height:1.7}
+.tit .tx{flex:1;min-width:0}
+.tkind{font-size:11.5px;border-radius:4px;padding:0 6px;background:var(--chip);color:var(--muted);white-space:nowrap}
+.k-trades .tkind{background:var(--accent-bg);color:var(--accent)}.k-changes .tkind{background:var(--blue-bg);color:var(--blue)}
+.tgo{font-size:12px;color:var(--faint);white-space:nowrap}
+@media (max-width:560px){
+  .erow{grid-template-columns:1fr;gap:2px}
+  .ch-b{grid-template-columns:1fr}.ch-ar{justify-self:center;transform:rotate(90deg)}
+  .prw{grid-template-columns:auto 1fr auto}.prw .pc{grid-column:1/-1}
+  .ltop{flex-direction:column}.ltop .ltools{align-self:flex-end}
+  .lcard{padding:12px 14px}
+  .tday{grid-template-columns:1fr;gap:4px}
+  .tit{flex-wrap:wrap}
+}
 </style>
 </head>
 <body>
@@ -255,6 +395,7 @@ body.nots .ts,body.nots .tsg,body.nots .eid,body.nots .times,body.nots .src{disp
     <a class="brand" href="#/">__TITLE__<small id="brandsub"></small></a>
     <nav class="tabs" aria-label="视图">
       <a class="tab" id="tab-days" href="#/">每日总结</a>
+      <a class="tab" id="tab-tickers" href="#/t">个股<span class="cnt" id="tkcnt"></span></a>
       <a class="tab" id="tab-essays" href="#/essays">心路历程<span class="cnt" id="esscnt"></span></a>
       <a class="tab" id="tab-presets" href="#/presets">预设看板<span class="cnt" id="opencnt"></span></a>
     </nav>
@@ -280,6 +421,8 @@ const DAYS = D.days.slice().sort((a, b) => b.date.localeCompare(a.date));
 const RULES = D.rules || {}, PRESETS = D.presets || [];
 const BYDATE = new Map(DAYS.map(d => [d.date, d]));
 const ESSAYS = D.essays || [], BYSLUG = new Map(ESSAYS.map(e => [e.slug, e]));
+const TICKERS = D.tickers || [], TBY = new Map(TICKERS.map(t => [t.key, t]));
+const ASC = DAYS.slice().reverse();  // 从早到晚,时间线和圆点条用
 const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
 const store = {get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
@@ -428,7 +571,151 @@ function rTimeline(s) {
   }).join('');
   return `<div class="tl">${items}</div>` + subsHtml(s);
 }
-const R = {brief: rBrief, lessons: rLessons, assets: rCards, people: rCards, timeline: rTimeline};
+/* ---------- 每日总结各节的结构化版式(数据由 build.py 的 enrich 预先拆好) ---------- */
+function splitTop(s, seps) {  // 按标点切开,不切「」里面的
+  const out = []; let depth = 0, cur = '';
+  for (const ch of s) {
+    if (ch === '「') depth++; else if (ch === '」') depth = Math.max(0, depth - 1);
+    cur += ch;
+    if (!depth && seps.includes(ch)) { out.push(cur); cur = ''; }
+  }
+  if (cur.trim()) out.push(cur);
+  return out.map(x => x.trim()).filter(Boolean);
+}
+function points(text) {  // 一段压缩的话 → 几条要点:按句号切;太长的再按分号切
+  const out = [];
+  for (const s of splitTop(text, '。')) {
+    if (s.length > 46 && /[;;]/.test(s)) splitTop(s, ';;').forEach(x => out.push(x.replace(/[;;]$/, '')));
+    else out.push(s);
+  }
+  return out;
+}
+const MIS = D.mistakes || {};
+const rname = id => (MIS[id] && MIS[id].n) || (RULES[id] && RULES[id].n) || '';
+const rchip = id => { const n = rname(id), r = RULES[id] || MIS[id];
+  return `<span class="rchip"${r ? ` data-rid="${id}" role="button" tabindex="0"` : ''} title="${esc((r && (r.s || r.n)) || id)}"><b>${id}</b>${n ? esc(n.length > 15 ? n.slice(0, 15) + '…' : n) : ''}</span>`; };
+
+// 「通用(D15、T98)。喊单称……」:编号已经做成上面的理念签,这里只留补充说明;括号里带限定(如「F15 限他觉得稳的标的」)的整句保留
+function refNote(md) {
+  const m = md.match(/^(?:通用|他本人的?做法|他自己的做法|他自己|给听众的?)\s*[((]([^()()]*)[))]\s*[。;;,,]?\s*([\s\S]*)$/);
+  if (!m) return md;
+  const qual = m[1].replace(/(?<![A-Za-z0-9])[A-Z]{1,2}\d{1,3}(?!\d)/g, '').replace(/[、,,\s]/g, '');
+  return qual ? md : m[2];
+}
+function rLessons2(s) {
+  if (!s.subs.length) return generic(s);
+  const cards = [], toc = [];
+  for (const u of s.subs) {
+    const m = u.title.match(/^(\d+(?:\.\d+)?)\s*(.*?)\s*([((][^()()]*\d{1,2}:\d{2}:\d{2}[^()()]*[))])?\s*$/);
+    const num = m ? m[1] : '', title = m ? m[2] : u.title, times = m && m[3] ? m[3] : '';
+    const tparts = splitTop(title, ';;').map(x => x.replace(/[;;]$/, ''));
+    let quotes = '', pts = [], refs = [], scope = null, contra = false;
+    for (const b of u.blocks) {
+      const sc = b.t === 'p' && SCOPE.find(x => x[0].test(b.md));
+      const refLike = b.t === 'p' && (sc || /^[A-Z]{1,2}\d{1,3}[ 、限]/.test(b.md));
+      if (b.t === 'li' && /^「/.test(b.md)) quotes += `<blockquote class="keyq" id="${b.id}">${inl(b.md)}</blockquote>`;
+      else if (refLike) { scope = scope || sc || null; if (/相反/.test(b.md)) contra = true; refs.push(b); }
+      else if (b.t === 'li') pts.push(b.md);
+      else pts.push(...points(b.md));
+    }
+    if (!scope) { const all = u.blocks.map(b => b.md).join(' '), mm = all.match(/(通用|他本人|他自己|给听众)/); if (mm) scope = SCOPE.find(x => x[0].test(mm[1])); }
+    const ids = [...new Set(refs.flatMap(b => b.md.match(/(?<![A-Za-z0-9])[A-Z]{1,2}\d{1,3}(?!\d)/g) || []))];
+    const left = refs.map(b => b.md).join(' ').replace(/(?<![A-Za-z0-9])[A-Z]{1,2}\d{1,3}(?!\d)/g, '')
+      .replace(/通用|他本人的?做法|他自己的做法|他自己|给听众的?|[((][^()()]*[))]|[、,,;;。:: ]/g, '');
+    const sc = scope ? scope[1] : 'none';
+    const badges = (scope ? `<span class="scope s-${sc}">${scope[2]}</span>` : '') +
+                   (contra ? '<span class="scope s-contra" title="和台账里的说法相反,见「台账说明」">与台账相反</span>' : '');
+    toc.push(`<li><a href="#${u.id}" data-jump="${u.id}"><i class="dot d-${sc}${contra ? ' d-contra' : ''}"></i><span class="tn">${num}</span>${inl(tparts[0] || title)}</a></li>`);
+    cards.push(`<article class="lcard l-${sc}" id="${u.id}"><header><span class="num">${num}</span><h3>${inl(tparts[0] || title)}</h3><span class="badges">${badges}</span></header>` +
+      (tparts.length > 1 ? `<p class="lsub">${tparts.slice(1).map(inl).join('<span class="sep">·</span>')}</p>` : '') +
+      `<div class="lb">${quotes}${pts.length ? `<ul class="pts">${pts.map(x => `<li>${inl(x)}</li>`).join('')}</ul>` : ''}` +
+      (ids.length ? `<div class="lrules"><span class="lbl">对应理念</span>${ids.map(rchip).join('')}</div>` : '') +
+      (left.length ? `<p class="lnote"><span class="lbl">台账说明</span>${refs.map(b => inl(refNote(b.md))).join(' ')}</p>` : '') +
+      (times ? `<p class="times">讲到的位置 ${inl(times)}</p>` : '') + '</div></article>');
+  }
+  return blocks(s.blocks) +
+    `<div class="ltop"><ol class="ltoc">${toc.join('')}</ol><div class="ltools"><button type="button" class="iconbtn" data-act="lessons">只看标题</button></div></div>` +
+    `<div class="lcards">${cards.join('')}</div>`;
+}
+
+const tkLink = (name, keys) => keys && keys.length && TBY.has(keys[0]) ? `<a class="tlink" href="#/t/${encodeURIComponent(keys[0])}" title="看${esc(TBY.get(keys[0]).name)}的档案">${inl(name)}</a>` : inl(name);
+const STC2 = {'看多': 'll', '偏多': 'l', '观望': 'z', '没表态': 'z', '偏空': 's', '看空': 'ss', '不碰': 'n'};
+const erow = (e, id) => `<div class="erow"${id ? ` id="${id}"` : ''}><div class="en">${tkLink(e.name, e.keys)}</div>` +
+  `<div class="et">${e.stance ? `<span class="stc c-${STC2[e.stance] || 'n'}">${esc(e.stance)}</span>` : ''}${inl(e.md)}</div></div>`;
+function rEnts(s) {
+  // 一行一个标的(新写法)的连续几行合进同一个框;一行塞了几个标的(旧写法)的各自成框;**板块名** 单独一行是分组标题
+  let h = '', grp = [], aud = false;
+  const flush = () => { if (grp.length) { h += `<div class="egroup${aud ? ' muted' : ''}">${grp.join('')}</div>`; grp = []; } };
+  const run = list => {
+    for (const b of list) {
+      if (b.t === 'li' && b.ents && b.ents.length === 1) { grp.push(erow(b.ents[0], b.id)); continue; }
+      flush();
+      if (b.t === 'p') {
+        const m = b.md.match(/^\*\*([^*]+)\*\*[::]?$/);
+        if (m) aud = /给听众|不计/.test(m[1]);
+        h += m ? `<h4 class="egrp${aud ? ' muted' : ''}" id="${b.id}">${inl(m[1])}</h4>` : `<p id="${b.id}">${inl(b.md)}</p>`;
+      } else if (!b.ents) h += `<div class="erow wide${aud ? ' muted' : ''}" id="${b.id}"><div class="et">${inl(b.md)}</div></div>`;
+      else h += `<div class="egroup${aud ? ' muted' : ''}" id="${b.id}">${b.ents.map(e => erow(e)).join('')}</div>`;
+    }
+    flush();
+  };
+  run(s.blocks);
+  for (const u of s.subs) { h += `<h3 id="${u.id}">${inl(u.title)}</h3>`; aud = /给听众|不计/.test(u.title); run(u.blocks); }
+  return `<div class="ents">${h}</div>`;
+}
+
+function rChg(s) {
+  const cards = s.blocks.map(b => {
+    const c = b.chg;
+    if (!c) return b.t === 'li' ? `<div class="chg plain" id="${b.id}">${inl(b.md)}</div>` : blk(b);
+    const head = `<div class="ch-h">${tkLink(`**${c.topic}**`, c.keys)}${c.tag ? `<span class="ctag">${esc(c.tag)}</span>` : ''}</div>`;
+    if (c.same !== undefined) return `<div class="chg same" id="${b.id}">${head}<div class="ch-one">${inl(c.same)}</div></div>`;
+    const when = c.when ? c.when.split('-').map(Number).join('/') : '';
+    return `<div class="chg" id="${b.id}">${head}<div class="ch-b"><div class="ch-x"><span class="lbl">之前${when ? ' · ' + when : ''}</span>${inl(c.before)}</div>` +
+      `<div class="ch-ar" aria-hidden="true">→</div><div class="ch-x now"><span class="lbl">今天</span>${inl(c.after)}</div></div></div>`;
+  }).join('');
+  return `<div class="chgs">${cards}</div>` + subsHtml(s);
+}
+
+function rMis(s) {
+  const cards = s.blocks.map(b => {
+    const m = b.mis;
+    if (!m) return b.t === 'li' ? `<div class="mis" id="${b.id}"><div class="mt">${inl(b.md)}</div></div>` : blk(b);
+    const cls = m.kind === '像' ? 'like' : m.kind === '不像' ? 'unlike' : '';
+    const badge = m.kind === '像' ? '像老毛病' : m.kind === '不像' ? '这次不像' : esc(m.label);
+    const rest = m.label.replace(/^(像|不像|没犯|没有)\s*/, '').replace(/(?<![A-Za-z0-9])[A-Z]{1,2}\d{1,3}(?!\d)/g, '').replace(/^[\s、,(()]+|[\s、,()]+$/g, '');
+    return `<div class="mis ${cls}" id="${b.id}"><div class="mh"><span class="mk">${badge}</span>${m.ids.map(rchip).join('')}` +
+      `${rest ? `<span class="mx">${inl(rest)}</span>` : ''}</div><div class="mt">${inl(m.md)}</div></div>`;
+  }).join('');
+  return `<p class="hint">提示,不是结论:把这场的做法和他自己总结过的老毛病对照一下。</p><div class="miss">${cards}</div>` + subsHtml(s);
+}
+
+function rDayPresets(s) {
+  const day = CUR;
+  if (!day) return generic(s);
+  const neu = PRESETS.filter(p => p.first === day.date);
+  const done = PRESETS.filter(p => p.first !== day.date && (p.history || []).some(h => h.date === day.date && h.status !== '待触发'));
+  if (!neu.length && !done.length) return generic(s);
+  // 每行:标的 | 类型 | 条件 → 动作(了结的另起一行写这场怎么了结)| 状态;整行不做成链接(说明里本身可能有预设号链接)
+  const row = (p, h) => `<div class="prw"><span class="ptk">${esc(p.ticker === 'UNKNOWN' ? '大盘' : p.ticker)}</span>` +
+    `<span class="pk">${esc(p.kind || '')}<a class="pid2" href="#/presets/${p.preset_id}" title="去预设看板看这一条的全部经过">${p.preset_id.slice(1)}</a></span>` +
+    `<span class="pc">${inl(p.condition || '')} <b class="arr">→</b> ${inl(p.action || '')}` +
+    `${h && h.note ? `<span class="pend">这场:${inl(h.note)}</span>` : ''}</span>${stBadge(h ? h.status : p.status)}</div>`;
+  const rest = s.blocks.filter(b => b.t === 'p' && !/^\*\*(新设|新登记|了结)\*\*[::]?$/.test(b.md));
+  return `<div class="dps"><h4>新设 ${neu.length} 条<small>状态是到现在为止的</small></h4>${neu.map(p => row(p)).join('') || '<p class="empty">没有。</p>'}` +
+    `<h4>这场了结 ${done.length} 条</h4>${done.map(p => row(p, p.history.find(h => h.date === day.date && h.status !== '待触发'))).join('') || '<p class="empty">没有。</p>'}` +
+    (rest.length ? `<div class="dpx">${rest.map(blk).join('')}</div>` : '') + '</div>' +
+    `<details class="raw"><summary>这一节的原文</summary>${blocks(s.blocks)}</details>`;
+}
+
+const sepPts = md => splitTop(md, ';;').map(x => x.replace(/[;;]$/, '')).join(' · ');
+function rTimeline2(s) {
+  return rTimeline({...s, blocks: s.blocks.map(b => ({...b, md: b.md.replace(/^(\*\*[^*]+\*\*[::]\s*)([\s\S]*)$/, (_, a, t) => a + sepPts(t))}))});
+}
+const rNotes = s => `<details class="notes"><summary>展开(钟点对时、缺段、存疑的标的、转写纠正……核对用)</summary>${generic(s)}</details>`;
+
+const R = {brief: rBrief, lessons: rLessons2, assets: rEnts, people: rEnts, trades: rEnts, account: rEnts,
+           changes: rChg, mistakes: rMis, presets: rDayPresets, timeline: rTimeline2, notes: rNotes};
 
 /* ---------- 视图 ---------- */
 let RENDERED = {}, HL = null, HLB = null, IO = null, LASTDAY = null;
@@ -436,7 +723,11 @@ let SIDE = '';
 function renderSide(mode = 'days') {
   if (SIDE === mode) return;
   SIDE = mode;
-  side.innerHTML = mode === 'essays'
+  side.innerHTML = mode === 'tickers'
+    ? `<div class="sidehead">出现过两场以上的 · 按场次多少</div>` + TICKERS.filter(t => t.dates.length >= 2).map(t =>
+      `<a class="day" href="#/t/${encodeURIComponent(t.key)}" data-date="${esc(t.key)}"><div class="dd">${esc(t.name)}</div>` +
+      `<div class="hl">${t.dates.length} 场 · 最近 ${md(t.last)}</div></a>`).join('')
+    : mode === 'essays'
     ? `<div class="sidehead">${ESSAYS.length} 篇 · 按时期</div>` + ESSAYS.map(e =>
       `<a class="day" href="#/essays/${e.slug}" data-date="${e.slug}"><div class="dd">${esc(e.period)}</div>` +
       `<div class="hl">${esc(e.title.replace(/\*\*/g, ''))}</div></a>`).join('')
@@ -454,6 +745,7 @@ function sideActive(date) {
 function setTab(t) {
   $('#tab-days').classList.toggle('on', t === 'days');
   $('#tab-essays').classList.toggle('on', t === 'essays');
+  $('#tab-tickers').classList.toggle('on', t === 'tickers');
   $('#tab-presets').classList.toggle('on', t === 'presets');
 }
 const disc = () => `<p class="disc">${esc(D.note)}</p>`;
@@ -491,6 +783,77 @@ function renderEssay(e, secId) {
   afterRender(secId);
 }
 
+/* ---------- 大方向时间线:三条线 × 每一场 ---------- */
+const DL = {'看多': ['ll', '多'], '偏多': ['l', '偏多'], '震荡': ['z', '震'], '偏空': ['s', '偏空'], '看空': ['ss', '空'], '没说': ['n', '·']};
+const LANES = [['long', '长期'], ['mid', '大方向'], ['tac', '这几天']];
+function dirStrip(cur) {
+  const days = ASC.filter(d => d.dir);
+  if (!days.length) return '';
+  const head = days.map(d => `<th scope="col"${d.date === cur ? ' class="cur"' : ''}><a href="#/${d.date}">${md(d.date)}</a></th>`).join('');
+  const rows = LANES.map(([k, name]) => `<tr><th scope="row">${name}</th>` + days.map(d => {
+    const [l, why] = d.dir[k] || ['没说', ''], [c, t] = DL[l] || DL['没说'];
+    return `<td class="c-${c}${d.date === cur ? ' cur' : ''}"><a href="#/${d.date}" title="${esc(`${md(d.date)} ${name}:${l}${why ? ' — ' + why : ''}`)}">${t}</a></td>`;
+  }).join('') + '</tr>').join('');
+  const me = BYDATE.get(cur);
+  const today = me && me.dir ? LANES.map(([k, name]) => { const [l, why] = me.dir[k] || ['没说', ''];
+    return `<span><b>${name}</b>${esc(l)}${why ? `<i>${esc(why)}</i>` : ''}</span>`; }).join('') : '';
+  const legend = ['看空', '偏空', '震荡', '偏多', '看多', '没说'].map(l => `<span><i class="sw c-${DL[l][0]}"></i>${l}</span>`).join('');
+  return `<div class="dirbox"><div class="dirtop"><b>大方向时间线</b><span class="dleg">${legend}</span></div>` +
+    `<div class="dirscroll"><table class="dir"><thead><tr><th></th>${head}</tr></thead><tbody>${rows}</tbody></table></div>` +
+    (today ? `<div class="dtoday">${today}</div>` : '') +
+    `<p class="dnote">按每场总结里「大方向 / 战术」的原文归类${me && me.dir && me.dir.src === '回填' ? '(这一场是 11/6 事后回填的)' : ''};` +
+    `格子上停一下看依据,点格子去那一场。「长期」只在他明说长期看法时才标。</p></div>`;
+}
+
+/* ---------- 个股档案 ---------- */
+const PBY = new Map(PRESETS.map(p => [p.preset_id, p]));
+const KLAB = {assets: '看法', trades: '操作', changes: '变化', account: '账户', people: '人物'};
+const dots = (dates, big) => { const set = new Set(dates);
+  return `<span class="dots${big ? ' big' : ''}" aria-hidden="true">` + ASC.map(d => `<i class="${set.has(d.date) ? 'on' : ''}" title="${md(d.date)}${set.has(d.date) ? ' 提到' : ''}"></i>`).join('') + '</span>'; };
+const openN = t => t.presets.filter(id => (PBY.get(id) || {}).status === '待触发').length;
+function renderTickers() {
+  const many = TICKERS.filter(t => t.dates.length >= 2), few = TICKERS.filter(t => t.dates.length < 2);
+  const tile = t => `<a class="ttile" href="#/t/${encodeURIComponent(t.key)}"><div class="tn">${esc(t.name)}</div>` +
+    `<div class="tm">${t.dates.length} 场 · 最近 ${md(t.last)}${openN(t) ? ` · <b>待触发 ${openN(t)}</b>` : ''}</div>${dots(t.dates)}</a>`;
+  view.innerHTML = `<article><div class="dayhead"><h1>个股与板块</h1><p class="meta">把每场总结里对同一个标的的看法、操作、变化和预设串在一起;` +
+    `中文名、代码、杠杆和反向 ETF 归到同一处(比如 SOXL、SOXS 都算半导体)。小圆点从左到右是 ${md(ASC[0].date)} → ${md(ASC[ASC.length - 1].date)} 的每一场,实心是那场提到了。</p>${disc()}</div>` +
+    `<div class="tgrid">${many.map(tile).join('')}</div>` +
+    (few.length ? `<h2 class="th2">只出现过一场</h2><p class="tfew">${few.map(t => `<a href="#/t/${encodeURIComponent(t.key)}">${esc(t.name)}</a>`).join('')}</p>` : '') + '</article>';
+  sideActive(null);
+  window.scrollTo(0, 0);
+}
+function renderTicker(t) {
+  const ps = t.presets.map(id => PBY.get(id)).filter(Boolean), open = ps.filter(p => p.status === '待触发'), closed = ps.filter(p => p.status !== '待触发');
+  const byDate = new Map();
+  t.items.forEach(i => { if (!byDate.has(i.date)) byDate.set(i.date, []); byDate.get(i.date).push(i); });
+  const items = [...byDate.keys()].sort().reverse().map(dt => {
+    const d = BYDATE.get(dt);
+    CUR = d;
+    const h = `<div class="tday"><a class="tdh" href="#/${dt}">${md(dt)}<span>${d ? d.wd : ''}</span></a><div>` +
+      byDate.get(dt).map(i => `<div class="tit k-${i.kind}"><span class="tkind">${KLAB[i.kind] || i.kind}</span>` +
+        (/给听众|不计/.test(i.grp) ? '<span class="ctag">给听众</span>' : i.kind === 'changes' && i.grp ? `<span class="ctag">${esc(i.grp)}</span>` : '') +
+        `<div class="tx">${i.name && i.kind !== 'changes' ? `<b>${inl(i.name)}</b>${/^[((]/.test(i.md) ? '' : ':'}` : ''}${inl(i.md)}</div>` +
+        `<a class="tgo" href="#/${dt}/s${i.sn}" title="去那一场的这一节">原文</a></div>`).join('') + '</div></div>';
+    CUR = null;
+    return h;
+  }).join('');
+  const word = t.name.split(/\s|·/)[0];
+  view.innerHTML = `<article><div class="dayhead"><h1>${esc(t.name)}</h1><p class="meta">${t.dates.length} 场提到 · 最近 ${md(t.last)} · 预设 ${ps.length} 条(待触发 ${open.length})` +
+    ` · <a href="#/q/${encodeURIComponent(word)}">在全部总结里搜「${esc(word)}」</a></p>${dots(t.dates, true)}${disc()}</div>` +
+    (ps.length ? `<section class="sec"><h2>预设<small>待触发的在上</small></h2>${open.map(pcard).join('')}` +
+      `${closed.length ? `<details class="raw"><summary>已了结 ${closed.length} 条</summary>${closed.map(pcard).join('')}</details>` : ''}</section>` : '') +
+    `<section class="sec"><h2>每场怎么说、怎么做<small>新的在上</small></h2>${items || '<p class="empty">只有预设。</p>'}</section></article>`;
+  sideActive(t.key);
+  window.scrollTo(0, 0);
+}
+
+// 页头:开播钟点和时长一行写清;场次号、对时依据、来源这些核对用的放进折叠
+function metaHtml(day) {
+  const m = day.meta.match(/开播约\s*\**\s*美东\s*([\d:]+)\s*\/\s*北京\s*([\d:]+)/), len = day.meta.match(/讲了约\s*(\d+)\s*分钟/);
+  if (!m) return `<p class="meta">${inl(day.meta)}</p>`;
+  return `<div class="meta">开播 美东 <b>${m[1]}</b> / 北京 <b>${m[2]}</b>${len ? ` · 讲了约 ${len[1]} 分钟` : ''}` +
+    `<details class="mraw"><summary>场次、对时依据、来源</summary>${inl(day.meta)}</details></div>`;
+}
 function renderDay(day, secId) {
   CUR = day;
   const i = DAYS.indexOf(day), older = DAYS[i + 1], newer = DAYS[i - 1];
@@ -499,7 +862,7 @@ function renderDay(day, secId) {
   const secs = day.sections.map(s => `<section class="sec k-${s.kind}" id="s${s.n}"><h2><span class="sn">${s.n}</span>${esc(s.title)}</h2>` +
     `${(R[s.kind] || generic)(s)}</section>`).join('');
   view.innerHTML = `<article><div class="dayhead"><h1>${+mo}月${+dd}日<span class="wd">${day.wd} · ${y}</span>` +
-    `${day.fmt === 'v1' ? '<span class="tag">旧格式</span>' : ''}</h1><p class="meta">${inl(day.meta)}</p>${disc()}</div>` +
+    `${day.fmt === 'v1' ? '<span class="tag">旧格式</span>' : ''}</h1>${metaHtml(day)}${disc()}${dirStrip(day.date)}</div>` +
     `<nav class="secnav" aria-label="本场各节">${nav}</nav>${secs}` +
     `<div class="pager">${older ? `<a href="#/${older.date}" rel="prev">← ${md(older.date)} ${older.wd}</a>` : '<span></span>'}` +
     `${newer ? `<a href="#/${newer.date}" rel="next">${md(newer.date)} ${newer.wd} →</a>` : '<span></span>'}</div>` +
@@ -507,6 +870,8 @@ function renderDay(day, secId) {
   CUR = null;
   sideActive(day.date);
   observe();
+  const ds = $('.dirscroll', view), dc = ds && $('td.cur', ds);  // 窄屏:时间线滚到当天那一列
+  if (dc && ds.scrollWidth > ds.clientWidth) ds.scrollLeft = Math.max(0, dc.offsetLeft + dc.offsetWidth - ds.clientWidth + 60);
   afterRender(secId);
 }
 function observe() {
@@ -654,6 +1019,14 @@ function route() {
     renderEssay(e, sec);
     return;
   }
+  if (parts[0] === 't') {
+    setTab('tickers');
+    renderSide('tickers');
+    const t = TBY.get(parts[1]) || TICKERS.find(x => x.name.split(/\s|·/).includes(parts[1]));  // #/t/英伟达 也能打开
+    RENDERED = {v: t ? 'ticker' : 'tickers'};
+    t ? renderTicker(t) : renderTickers();
+    return;
+  }
   renderSide('days');
   if (parts[0] === 'presets') { setTab('presets'); RENDERED = {v: 'presets'}; renderPresets(parts[1]); return; }
   setTab('days');
@@ -676,10 +1049,10 @@ function route() {
 
 /* ---------- 交互 ---------- */
 function showPop(el) {
-  const id = el.dataset.rid, r = RULES[id];
+  const id = el.dataset.rid, isMis = /^B\d/.test(id) && MIS[id], r = isMis ? MIS[id] : RULES[id];
   if (!r) return;
   pop.innerHTML = `<div class="ph"><span class="rid">${id}</span>${esc(r.n || '')}${r.st ? `<span class="tag">${esc(r.st)}</span>` : ''}</div>` +
-    `${r.s ? `<p>${esc(r.s)}</p>` : ''}<p class="pf">理念台账 v2 编号 · brant-why 里查:why.py --idea ${id}</p>`;
+    `${r.s ? `<p>${esc(r.s)}</p>` : ''}<p class="pf">${isMis ? `老毛病编号 · brant-why 里查:why.py --lesson ${id}` : `理念台账 v2 编号 · brant-why 里查:why.py --idea ${id}`}</p>`;
   pop.classList.add('show');
   const b = el.getBoundingClientRect(), pw = pop.offsetWidth, ph = pop.offsetHeight;
   pop.style.left = Math.max(12, Math.min(window.innerWidth - pw - 12, b.left - 12)) + 'px';
@@ -687,14 +1060,15 @@ function showPop(el) {
 }
 function hidePop() { pop.classList.remove('show'); }
 document.addEventListener('click', e => {
-  const r = e.target.closest('.rid[data-rid]');
+  const r = e.target.closest('[data-rid]');
   if (r) { e.preventDefault(); showPop(r); return; }
   if (!e.target.closest('.pop')) hidePop();
+  const jump = e.target.closest('[data-jump]');
+  if (jump) { e.preventDefault(); const t = document.getElementById(jump.dataset.jump); if (t) t.scrollIntoView({block: 'start'}); return; }
   const act = e.target.closest('[data-act="lessons"]');
   if (act) {
-    const ds = $$('.lesson', act.closest('.sec')), open = !ds.every(d => d.open);
-    ds.forEach(d => d.open = open);
-    act.textContent = open ? '全部收起' : '全部展开';
+    const box = $('.lcards', act.closest('.sec'));
+    if (box) { const on = box.classList.toggle('titles'); act.textContent = on ? '展开全部' : '只看标题'; }
     return;
   }
   const f = e.target.closest('[data-pf]');
@@ -751,6 +1125,8 @@ setHH();
 $('#brandsub').textContent = `${DAYS.length} 场 · 截至 ${md(DAYS[0].date)}`;
 $('#opencnt').textContent = PRESETS.filter(p => p.status === '待触发').length || '';
 $('#esscnt').textContent = ESSAYS.length || '';
+$('#tkcnt').textContent = TICKERS.filter(t => t.dates.length >= 2).length || '';
+if (!TICKERS.length) $('#tab-tickers').hidden = true;
 if (!ESSAYS.length) $('#tab-essays').hidden = true;
 route();
 })();
