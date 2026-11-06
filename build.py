@@ -36,11 +36,22 @@ LI = re.compile(r'^(\s*)[-*]\s+(.*)$')
 NUM = re.compile(r'^[一二三四五六七八九十]+、\s*')
 
 
+CHART = re.compile(r'^\{\{chart\s+([\w-]+)\}\}$')
+
+
 def block(line):
+    """一行 → 一个块:- 列表;> 「原话」[[出处]] 是引文块,> 其他是提示框;{{chart 名字}} 是图表(数据在同名 .json)。"""
     m = LI.match(line.rstrip())
     if m:
         return {'t': 'li', 'lvl': len(m[1].expandtabs(2)) // 2, 'md': m[2].strip()}
-    return {'t': 'p', 'md': line.strip()}
+    s = line.strip()
+    if s.startswith('>'):
+        body = s[1:].strip()
+        return {'t': 'quote' if body.startswith('「') else 'aside', 'md': body}
+    m = CHART.match(s)
+    if m:
+        return {'t': 'chart', 'chart': m[1], 'md': ''}
+    return {'t': 'p', 'md': s}
 
 
 def short(title):
@@ -49,7 +60,7 @@ def short(title):
 
 
 def essay(p):
-    """content/essays/<slug>.md:开头 --- 包住的 title/period/written/summary,正文 ## 节、### 小节、- 列表、段落。"""
+    """content/essays/<slug>.md:开头 --- 包住的 title/period/written/summary,正文 ## 节、### 小节、- 列表、段落、> 引文/提示、{{chart}}。"""
     t = p.read_text(encoding='utf-8').replace('\r\n', '\n')
     meta, m = {}, FM.match(t)
     if m:
@@ -72,9 +83,14 @@ def essay(p):
             cur['subs'].append(sub)
         elif cur:
             (sub['blocks'] if sub else cur['blocks']).append(block(line))
+    side = p.with_suffix('.json')  # 同名 .json:图表数据 {"charts": {名字: {...}}}
+    charts = json.loads(side.read_text(encoding='utf-8')).get('charts', {}) if side.exists() else {}
+    body = re.sub(r'\[\[[^\]]*\]\]|\{\{[^}]*\}\}|\*\*|^#+ |^\s*[-*>] ', '', t, flags=re.M)
+    chars = len(re.sub(r'\s', '', body))
     return {'slug': p.stem, 'title': meta.get('title') or p.stem, 'period': meta.get('period', ''),
             'written': meta.get('written', ''), 'summary': meta.get('summary', ''),
-            'chars': len(re.sub(r'\s|\[\[[^\]]*\]\]', '', t)), 'sections': secs}
+            'chars': chars, 'mins': max(1, round(chars / 450)), 'quotes': len(re.findall(r'「[^「」]+」', t)),
+            'srcs': len(re.findall(r'\[\[[^\]]+\]\]', t)), 'charts': charts, 'sections': secs}
 
 
 def sync(src):

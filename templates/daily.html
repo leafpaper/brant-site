@@ -388,6 +388,140 @@ details.raw summary,details.notes summary{cursor:pointer;color:var(--faint);font
   .tday{grid-template-columns:1fr;gap:4px}
   .tit{flex-wrap:wrap}
 }
+
+/* ===== 心路历程:长文阅读版式(窄栏、角标出处、引文块、提示框、竖排时间线、侧栏目录、走势图) ===== */
+:root{--band:rgba(40,35,20,.045);--grid:rgba(40,35,20,.09);--pqbar:#c9a48c}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--band:rgba(255,255,255,.04);--grid:rgba(255,255,255,.08);--pqbar:#7a5440}}
+:root[data-theme="dark"]{--band:rgba(255,255,255,.04);--grid:rgba(255,255,255,.08);--pqbar:#7a5440}
+.readbar{position:fixed;left:0;right:0;top:var(--hh);height:2px;z-index:29;pointer-events:none}
+.readbar i{display:block;height:100%;width:0;background:var(--accent);transition:width .08s linear}
+.essay{max-width:700px}
+.ehero{padding:34px 0 2px}
+.eyebrow{font-size:12.5px;font-weight:700;letter-spacing:.14em;color:var(--accent)}
+.eyebrow a{text-decoration:none}
+.ehero h1{font-size:31px;line-height:1.42;margin:12px 0 0;font-weight:750;letter-spacing:.01em;text-wrap:balance}
+.ehero h1 .q{color:inherit}
+.dek{font-size:17.5px;line-height:1.9;color:var(--muted);margin:16px 0 0}
+.dek .q{color:inherit}
+.emeta{display:flex;flex-wrap:wrap;gap:4px 18px;font-size:13px;color:var(--faint);margin:20px 0 0;padding:14px 0 0;border-top:1px solid var(--border)}
+.emeta b{color:var(--muted);font-weight:600;font-variant-numeric:tabular-nums}
+.essay .disc{margin-top:8px}
+.essay .sec{margin-top:60px;scroll-margin-top:calc(var(--hh) + 20px)}
+.essay .sec>h2{display:block;font-size:24px;line-height:1.45;margin:0 0 20px;padding-top:26px;border-top:1px solid var(--border);letter-spacing:.01em}
+.essay .sec>h2 .cn{display:block;font-size:12.5px;font-weight:700;letter-spacing:.16em;color:var(--accent);margin-bottom:6px}
+.essay .sec p,.essay .sec li{font-size:17px;line-height:1.95}
+.essay .sec p{margin:0 0 1.05em}
+.essay .sec ul{margin:0 0 1.05em;padding-left:1.2em}
+.essay .sec li{margin:.55em 0;padding-left:.15em}
+.essay .sec li.lvl1{margin-left:1.5em;font-size:16.5px;list-style-type:circle}
+.essay .sec li.lvl1::marker{color:var(--faint)}
+.essay .sec h3{font-size:19.5px;line-height:1.55;margin:44px 0 14px;scroll-margin-top:calc(var(--hh) + 20px);letter-spacing:.01em}
+.essay .sec h3 .q,.essay .sec>h2 .q{color:inherit}
+.essay .sec strong{font-weight:650}
+.essay .q{color:var(--quote)}
+.fn{padding:0 1px 0 2px;font:600 10.5px/1 ui-monospace,SFMono-Regular,Consolas,monospace;color:var(--accent);vertical-align:super;cursor:pointer;font-variant-numeric:tabular-nums;opacity:.8}
+.fn.fnr{font-family:inherit;font-weight:500;font-size:11px;padding-left:4px}
+.fn:hover,.fn:focus-visible{opacity:1;text-decoration:underline}
+.fns{color:var(--faint);font-size:10.5px;vertical-align:super;line-height:1}
+body.nots .fns{display:none}
+body.nots .fn{display:none}
+.epq{margin:36px 0;padding:18px 24px 15px;border-left:3px solid var(--accent);background:var(--accent-bg);border-radius:0 12px 12px 0}
+.epq blockquote{margin:0;font-size:21px;line-height:1.75;font-weight:650;letter-spacing:.01em;color:var(--text)}
+.epq blockquote .q{color:inherit}
+.epq figcaption{margin-top:8px;font-size:13px;color:var(--muted)}
+.callout{margin:28px 0;background:var(--surface2);border-radius:12px;padding:15px 20px 14px}
+.callout .ct{font-size:12.5px;font-weight:700;letter-spacing:.08em;color:var(--muted);margin-bottom:6px}
+.essay .callout p{font-size:15.5px;line-height:1.9;margin:0}
+.essay .k-brief .brief{padding:6px 22px}
+.essay .k-brief .brief .row{grid-template-columns:6.2em minmax(0,1fr)}
+.essay .k-brief .brief .val{font-size:16px;line-height:1.85}
+.essay .k-brief .brief .row:first-child .val{font-size:17.5px;font-weight:600;line-height:1.8}
+.essay .k-brief>h2{border-top:0;padding-top:0}
+.etl{list-style:none;margin:0;padding:0;position:relative}
+.etl::before{content:"";position:absolute;left:5px;top:14px;bottom:14px;width:2px;background:var(--border)}
+.etl li,.essay .sec .etl li{display:block;padding:4px 0 16px 30px;position:relative;margin:0}
+.etl li::after{content:"";position:absolute;left:0;top:10px;width:8px;height:8px;border-radius:50%;background:var(--bg);border:2px solid var(--accent)}
+.etl .etd{display:block;font-size:13px;font-weight:700;color:var(--accent);letter-spacing:.03em;line-height:1.6}
+.essay .etl .etx{font-size:16px;line-height:1.85;margin-top:2px}
+.essay .pager{gap:14px}
+.essay .pager a{flex:1 1 0;padding:12px 16px;line-height:1.6;max-width:48%}
+.essay .pager a small{display:block;font-size:12px;color:var(--faint)}
+.essay .pager a[rel="next"]{text-align:right;margin-left:auto}
+.ecard .ey{font-size:12px;font-weight:700;letter-spacing:.12em;color:var(--accent)}
+.ecard h2{margin-top:6px}
+.ecard .q{color:inherit}
+/* 侧栏目录 */
+.toc{margin:2px 0 12px 12px;padding:4px 0 4px 10px;border-left:1px solid var(--border);font-size:13px;line-height:1.5}
+.toc .tl{font-size:11.5px;color:var(--faint);letter-spacing:.08em;margin:4px 0 6px}
+.toc a{display:flex;gap:6px;text-decoration:none;color:var(--muted);padding:4px 8px;border-radius:7px;margin-left:-8px}
+.toc a:hover{color:var(--text);background:var(--surface2)}
+.toc a.on{color:var(--text);font-weight:650;background:var(--surface)}
+.toc .tn{color:var(--faint);min-width:1.1em;font-weight:500}
+.toc a.on .tn{color:var(--accent)}
+.toc .t3{display:none;margin:0 0 4px 1.1em}
+.toc .t3 a{font-size:12.5px;padding:3px 8px}
+.toc .t3 a.on{background:none;color:var(--accent);font-weight:600}
+.toc .ts2.open .t3{display:block}
+/* 走势图 */
+.chart{margin:8px 0 34px;position:relative}
+.chart .chd{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 14px;margin-bottom:8px}
+.chart .cht{font-size:15px;font-weight:650}
+.chart .chs{font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.chart .legend{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:12.5px;color:var(--muted);margin:0 0 6px}
+.chart .legend span{display:inline-flex;align-items:center;gap:6px}
+.chart .legend i{display:inline-block;width:10px;height:10px;border-radius:50%}
+.chart .legend i.ln{width:16px;height:2px;border-radius:1px;background:var(--text)}
+.chart .legend i.bd{width:12px;height:12px;border-radius:2px;background:var(--band);border:1px solid var(--border)}
+.chart svg{display:block;width:100%;overflow:visible;touch-action:pan-y;user-select:none;-webkit-user-select:none}
+.ch-grid{stroke:var(--grid);stroke-width:1}
+.ch-ax{fill:var(--faint);font:11px ui-monospace,SFMono-Regular,Consolas,monospace}
+.ch-ax.yr{fill:var(--muted);font-weight:700}
+.ch-band{fill:var(--band)}
+.ch-bl{fill:var(--muted);font-size:11.5px;cursor:pointer;text-anchor:middle}
+.ch-bl:hover{fill:var(--accent)}
+.ch-line{fill:none;stroke:var(--text);stroke-width:1.75;stroke-linejoin:round;stroke-linecap:round;opacity:.82}
+.ch-ext{fill:var(--surface);stroke:var(--text);stroke-width:1.5}
+.ch-dot{stroke:var(--surface);stroke-width:2;cursor:pointer}
+.ch-dot.s-多{fill:var(--d-ll)}.ch-dot.s-空{fill:var(--d-ss)}.ch-dot.s-事{fill:var(--muted)}
+.ch-dot:hover,.ch-dot.on{stroke:var(--text)}
+.ch-lab{font-size:11.5px;fill:var(--text);font-weight:600;pointer-events:none;paint-order:stroke;stroke:var(--bg);stroke-width:4px;stroke-linejoin:round}
+.ch-lead{stroke:var(--faint);stroke-width:1}
+.ch-x{stroke:var(--faint);stroke-width:1;stroke-dasharray:3 3}
+.ch-focus{fill:var(--text);stroke:var(--surface);stroke-width:2}
+.chtip{position:absolute;z-index:5;pointer-events:none;width:max-content;max-width:min(300px,calc(100% - 8px));background:var(--surface);border:1px solid var(--border);border-radius:10px;box-shadow:var(--popshadow);padding:9px 12px;font-size:12.5px;line-height:1.65;display:none}
+.chtip.show{display:block}
+.chtip.pin{pointer-events:auto}
+.chtip .tt{font-weight:650;font-variant-numeric:tabular-nums}
+.chtip .tp{color:var(--muted)}
+.chtip .tq{margin-top:6px;padding-top:6px;border-top:1px solid var(--border)}
+.chtip .tq .q{color:var(--quote)}
+.stb{display:inline-block;font-size:11px;font-weight:650;border-radius:4px;padding:0 6px;margin-right:6px;line-height:1.7}
+.stb.s-多{background:var(--d-ll);color:var(--d-ll-i)}.stb.s-空{background:var(--d-ss);color:var(--d-ss-i)}.stb.s-事{background:var(--chip);color:var(--muted)}
+.chart figcaption{font-size:12.5px;color:var(--faint);line-height:1.7;margin-top:8px}
+.cmarks{margin-top:10px;font-size:14px}
+.cmarks summary{cursor:pointer;color:var(--muted);font-size:13px}
+.cmarks ol{list-style:none;margin:8px 0 0;padding:0}
+.cmarks li{display:grid;grid-template-columns:5.6em minmax(0,1fr);gap:0 12px;padding:7px 0;border-top:1px solid var(--border);line-height:1.75}
+.essay .cmarks li{font-size:14px;margin:0}
+.cmarks .md{font:12.5px/1.75 ui-monospace,SFMono-Regular,Consolas,monospace;color:var(--muted)}
+@media (min-width:881px){.essay .secnav{display:none}}
+@media (max-width:880px){.toc{display:none}.readbar{display:none}}
+@media (max-width:560px){
+  .ehero{padding-top:22px}
+  .ehero h1{font-size:25px}
+  .dek{font-size:16px}
+  .essay .sec{margin-top:46px}
+  .essay .sec>h2{font-size:21px}
+  .essay .sec p,.essay .sec li{font-size:16px;line-height:1.9}
+  .essay .sec h3{font-size:18px;margin-top:36px}
+  .epq{padding:14px 16px 12px;margin:28px 0}
+  .epq blockquote{font-size:18px}
+  .callout{padding:13px 15px}
+  .essay .k-brief .brief{padding:2px 15px}
+  .essay .k-brief .brief .row{grid-template-columns:1fr}
+  .essay .pager{flex-direction:column}.essay .pager a{max-width:none}
+  .cmarks li{grid-template-columns:1fr}
+}
 </style>
 </head>
 <body>
@@ -408,6 +542,7 @@ details.raw summary,details.notes summary{cursor:pointer;color:var(--faint);font
     </div>
   </div>
 </header>
+<div class="readbar" id="readbar" hidden><i></i></div>
 <div class="wrap">
   <aside id="days" aria-label="场次"></aside>
   <main id="view"></main>
@@ -466,9 +601,38 @@ function tsTitle(t) {
 const tsSpan = t => `<span class="ts" title="${esc(tsTitle(t))}">${esc(t)}</span>`;
 const eidSpan = e => `<span class="eid" title="事件号,可用 why.py --event ${e} 查">${e}</span>`;
 const ridSpan = id => RULES[id] ? `<button type="button" class="rid" data-rid="${id}" title="${esc(RULES[id].n || '')}">${id}</button>` : esc(id);
+// 心路历程:渲染时 ESSAY 置为当前文章 → 出处改成角标 1 2 3(点开看场次),中文旁的半角标点换成全角
+let ESSAY = null, FN = 0;
+const isCJ = c => !!c && /[⺀-鿿豈-﫿　-〿＀-￯]/.test(c);
+const FWM = {',': '，', ':': '：', ';': '；', '?': '？', '!': '！'};
+function prevCh(str, off) {  // 往前跳过 [[...]] 出处标签找真正的前一个字
+  let i = off - 1;
+  while (i > 0 && str[i] === ']' && str[i - 1] === ']') { const j = str.lastIndexOf('[[', i); if (j < 0) break; i = j - 1; }
+  return str[i];
+}
+function nextCh(str, off) {
+  let i = off + 1;
+  while (str.startsWith('[[', i)) { const j = str.indexOf(']]', i); if (j < 0) break; i = j + 2; }
+  return str[i];
+}
+function fw(s) {
+  s = s.replace(/\(([^()\n]*)\)/g, (m, inner, off, str) =>
+    (/[⺀-鿿]/.test(inner) || isCJ(str[off - 1]) || isCJ(str[off + m.length])) ? `（${inner}）` : m);
+  return s.replace(/([,:;?!])/g, (m, p, off, str) => {
+    const a = prevCh(str, off), b = nextCh(str, off);
+    if (p === ';' || (str[off - 1] === ']' && str[off - 2] === ']')) return FWM[p];
+    if (p === ':' && /\d/.test(a || '') && /\d/.test(b || '')) return m;  // 00:12:27 这类进度时间
+    return isCJ(a) || isCJ(b) || (a === '*' && isCJ(str[off - 3])) ? FWM[p] : m;
+  });
+}
+const srcParse = s => { const m = s.match(/^(\d{4})(\d{2})(\d{2})_[^#\s]+(?:#(\d+)| (\d{1,2}:\d{2}:\d{2}))?$/);
+  return m ? {date: `${m[1]}-${m[2]}-${m[3]}`, card: m[4], t: m[5], stem: s.split(/[#\s]/)[0]} : null; };
+const fnBtn = s => { const n = ++FN, p = srcParse(s);
+  return `<sup class="fn" role="button" tabindex="0" data-src="${esc(s)}" data-n="${n}" aria-label="出处 ${n}${p ? ':' + p.date + ' 直播' : ''}">${n}</sup>`; };
 function inl(s) {
   s = String(s ?? '');
-  let out = '', last = 0;
+  if (ESSAY) s = fw(s);
+  let out = '', last = 0, fnEnd = -1;
   for (const m of s.matchAll(RX)) {
     out += esc(s.slice(last, m.index));
     last = m.index + m[0].length;
@@ -481,16 +645,27 @@ function inl(s) {
     else if (m[6] !== undefined) out += eidSpan(m[6]);
     else if (m[7] !== undefined) out += `<span class="tag">${esc(m[7])}</span>`;
     else if (m[8] !== undefined) out += ridSpan(m[8]);
-    else if (m[9] !== undefined) out += srcSpan(m[9]);
+    else if (m[9] !== undefined) { out += ESSAY ? (fnEnd === m.index ? '<span class="fns">,</span>' : '') + fnBtn(m[9]) : srcSpan(m[9]); fnEnd = last; }
   }
   return out + esc(s.slice(last));
 }
 
 /* ---------- 各节的版式 ---------- */
 const LABEL = /^\*\*([^*]+)\*\*[::]\s*([\s\S]*)$/;
+const SRCS = /\[\[([^\]]{4,80})\]\]/g;
 function blk(b) {
   const id = b.id ? ` id="${b.id}"` : '';
   if (b.t === 'li') return `<li class="lvl${Math.min(b.lvl, 2)}"${id}>${inl(b.md)}</li>`;
+  if (b.t === 'quote') {  // > 「原话」[[出处]]:引文块,出处写成「某日直播」+ 角标
+    const srcs = [...b.md.matchAll(SRCS)].map(m => m[1]), q = b.md.replace(SRCS, '').trim();
+    const cap = srcs.map(s => { const p = srcParse(s); return `${p ? esc(p.date) + ' 直播' : ''}${inl(`[[${s}]]`)}`; }).join(' · ');
+    return `<figure class="epq"${id}><blockquote>${inl(q)}</blockquote>${cap ? `<figcaption>— ${cap}</figcaption>` : ''}</figure>`;
+  }
+  if (b.t === 'aside') {  // > **标签**:正文 → 提示框
+    const m = b.md.match(LABEL);
+    return `<aside class="callout"${id}>${m ? `<div class="ct">${esc(m[1])}</div>` : ''}<p>${inl(m ? m[2] : b.md)}</p></aside>`;
+  }
+  if (b.t === 'chart') return `<figure class="chart" data-chart="${esc(b.chart || '')}"${id}></figure>`;
   const m = b.md.match(/^\*\*([^*]+)\*\*[::]?$/);
   return m ? `<h4${id}>${inl(m[1])}</h4>` : `<p${id}>${inl(b.md)}</p>`;
 }
@@ -750,7 +925,7 @@ function setTab(t) {
   $('#tab-presets').classList.toggle('on', t === 'presets');
 }
 const disc = () => `<p class="disc">${esc(D.note)}</p>`;
-const discE = () => '<p class="disc">整理他过去怎么做、怎么想。原话出自直播逐字稿,标签是出处;账户金额和盈亏是他的自述,无法核实。这不是买卖建议。</p>';
+const discE = () => `<p class="disc">${fw('整理他过去怎么做、怎么想。原话出自直播逐字稿,后面的小数字或标签是出处;账户金额和盈亏是他的自述,无法核实。这不是买卖建议。')}</p>`;
 function afterRender(secId) {  // 搜索点进来时高亮并跳到那一条,否则跳到指定的节或回到顶部
   if (HL) {
     markAll(view, HL);
@@ -760,29 +935,218 @@ function afterRender(secId) {  // 搜索点进来时高亮并跳到那一条,否
   } else if (secId && document.getElementById(secId)) document.getElementById(secId).scrollIntoView();
   else window.scrollTo(0, 0);
 }
-const emeta = e => `${esc(e.period)} · 写于 ${esc(e.written)} · 约 ${e.chars.toLocaleString()} 字`;
+/* ---------- 心路历程:列表、正文、侧栏目录、阅读进度、出处角标、走势图 ---------- */
+const plain = s => String(s || '').replace(/\*\*/g, '');
+const NUMH = /^([一二三四五六七八九十]+)、\s*/;
+const CN2N = {一: 1, 二: 2, 三: 3, 四: 4, 五: 5, 六: 6, 七: 7, 八: 8, 九: 9, 十: 10};
+const STN = {'多': '看多', '空': '看空', '事': '事件'}, STL = {'多': '他看多的判断', '空': '他看空的判断', '事': '账户和操作'};
+const fnRef = s => `<sup class="fn fnr" role="button" tabindex="0" data-src="${esc(s)}" data-n="">出处</sup>`;
 function renderEssays() {
-  view.innerHTML = `<article><div class="dayhead"><h1>心路历程</h1><p class="meta">按时期或主题整理的长文:他当时怎么做、怎么想,后来怎么回头看。` +
-    `原话后面的小标签是出处(直播日期 #卡号,或日期 + 直播进度)。</p>${discE()}</div>` +
-    (ESSAYS.map(e => `<a class="ecard" href="#/essays/${e.slug}"><h2>${inl(e.title)}</h2><div class="em">${emeta(e)}</div>` +
-      `<p>${inl(e.summary)}</p></a>`).join('') || '<p class="empty">还没有文章。</p>') + '</article>';
+  ESSAY = {}; FN = 0;
+  const cards = ESSAYS.map(e => `<a class="ecard" href="#/essays/${e.slug}"><div class="ey">${esc(e.period)}</div><h2>${inl(e.title)}</h2>` +
+    `<div class="em">写于 ${esc(e.written)} · 约 ${e.chars.toLocaleString()} 字 · 读完约 ${e.mins} 分钟 · 原话 ${e.quotes} 处</div>` +
+    `<p>${inl(e.summary)}</p></a>`).join('');
+  const dek = inl('他当时怎么做、怎么想,后来怎么回头看。每篇的原话都回逐字稿核对过,后面的小数字是出处,点开能看是哪天哪场直播。');
+  ESSAY = null;
+  view.innerHTML = `<article class="essay"><header class="ehero"><div class="eyebrow">心路历程</div><h1>按时期整理的长文</h1>` +
+    `<p class="dek">${dek}</p>${discE()}</header>${cards || '<p class="empty">还没有文章。</p>'}</article>`;
   sideActive(null);
   window.scrollTo(0, 0);
 }
+function essH2(s) {
+  const m = s.title.match(NUMH);
+  return `<h2>${m ? `<span class="cn">第${m[1]}部分</span>` : ''}${inl(m ? s.title.slice(m[0].length) : s.title)}</h2>`;
+}
+function rTimelineE(s) {  // 时间线:- **日期**:事 → 竖排时间轴
+  return `<ol class="etl">${s.blocks.map(b => { const m = b.md.match(LABEL);
+    return `<li id="${b.id}"><span class="etd">${m ? esc(m[1]) : ''}</span><div class="etx">${inl(m ? m[2] : b.md)}</div></li>`; }).join('')}</ol>` + subsHtml(s);
+}
+const ER = {brief: rBrief, timeline: rTimelineE};
 function renderEssay(e, secId) {
   const i = ESSAYS.indexOf(e), prev = ESSAYS[i - 1], next = ESSAYS[i + 1];
-  const nav = e.sections.map(s => `<a href="#/essays/${e.slug}/s${s.n}" data-s="s${s.n}">${esc(s.short)}</a>`).join('');
-  const secs = e.sections.map(s => `<section class="sec k-${s.kind}" id="s${s.n}"><h2>${esc(s.title)}</h2>` +
-    `${(R[s.kind] || generic)(s)}</section>`).join('');
-  view.innerHTML = `<article class="essay"><div class="dayhead"><h1>${inl(e.title)}</h1><p class="meta">${emeta(e)}</p>${discE()}</div>` +
-    `<nav class="secnav" aria-label="本文各节">${nav}</nav>${secs}` +
-    `<div class="pager">${prev ? `<a href="#/essays/${prev.slug}" rel="prev">← ${esc(prev.period)}</a>` : '<span></span>'}` +
-    `${next ? `<a href="#/essays/${next.slug}" rel="next">${esc(next.period)} →</a>` : '<span></span>'}</div>` +
-    `<p class="foot">来源 content/essays/${esc(e.slug)}.md · 网页生成于 ${esc(D.generated)}</p></article>`;
+  ESSAY = e; FN = 0;
+  const nav = e.sections.map(s => `<a href="#/essays/${e.slug}/s${s.n}" data-s="s${s.n}">${esc(fw(s.short))}</a>`).join('');
+  const hero = `<header class="ehero"><div class="eyebrow"><a href="#/essays">心路历程</a> · ${esc(e.period)}</div><h1>${inl(e.title)}</h1>` +
+    (e.summary ? `<p class="dek">${inl(e.summary)}</p>` : '') +
+    `<div class="emeta"><span>写于 <b>${esc(e.written)}</b></span><span>约 <b>${e.chars.toLocaleString()}</b> 字，读完约 <b>${e.mins}</b> 分钟</span>` +
+    `<span>原话 <b>${e.quotes}</b> 处，都回逐字稿核对过</span></div>${discE()}</header>`;
+  const secs = e.sections.map(s => `<section class="sec k-${s.kind}" id="s${s.n}">${essH2(s)}${(ER[s.kind] || generic)(s)}</section>`).join('');
+  const pg = (x, rel) => x ? `<a href="#/essays/${x.slug}" rel="${rel}"><small>${rel === 'prev' ? '← 上一篇' : '下一篇 →'} · ${esc(x.period)}</small>${inl(x.title)}</a>` : '';
+  const pager = prev || next ? `<nav class="pager" aria-label="其他文章">${pg(prev, 'prev')}${pg(next, 'next')}</nav>` : '';
+  view.innerHTML = `<article class="essay">${hero}<nav class="secnav" aria-label="本文各节">${nav}</nav>${secs}${pager}` +
+    `<p class="foot">来源 content/essays/${esc(e.slug)}.md · 出处 ${e.srcs} 个 · 网页生成于 ${esc(D.generated)} · <a href="#" data-top>回到顶部</a></p></article>`;
+  ESSAY = null;
   sideActive(e.slug);
+  essayToc(e);
+  drawCharts(e);
   observe();
   afterRender(secId);
+  spy();
 }
+function essayToc(e) {  // 侧栏:当前文章卡片下面挂本文目录,当前节展开小节
+  $$('.toc', side).forEach(n => n.remove());
+  const card = $$('.day', side).find(a => a.dataset.date === e.slug);
+  if (!card) return;
+  const items = e.sections.map(s => {
+    const m = s.title.match(NUMH), t = m ? s.title.slice(m[0].length) : s.title;
+    const subs = s.subs.length ? `<div class="t3">${s.subs.map(u => `<a href="#/essays/${e.slug}/${u.id}" data-u="${u.id}">${esc(fw(plain(u.title)))}</a>`).join('')}</div>` : '';
+    return `<div class="ts2" data-s="s${s.n}"><a href="#/essays/${e.slug}/s${s.n}" data-s="s${s.n}"><span class="tn">${m ? CN2N[m[1]] || m[1] : '·'}</span><span>${esc(fw(plain(t)))}</span></a>${subs}</div>`;
+  }).join('');
+  card.insertAdjacentHTML('afterend', `<nav class="toc" aria-label="本文目录"><div class="tl">本文目录</div>${items}</nav>`);
+}
+let SPYQ = false;
+function spy() {  // 滚动时:目录高亮当前节/小节,顶部进度条
+  if (RENDERED.v !== 'essay') return;
+  const lim = $('header.top').offsetHeight + 90;
+  let cur = null, cu = null;
+  for (const s of $$('.essay .sec', view)) if (s.getBoundingClientRect().top <= lim) cur = s;
+  cur = cur || $('.essay .sec', view);
+  for (const h of $$('h3', cur || view)) if (h.getBoundingClientRect().top <= lim) cu = h;
+  $$('.toc .ts2', side).forEach(d => d.classList.toggle('open', !!cur && d.dataset.s === cur.id));
+  $$('.toc a[data-s]', side).forEach(a => a.classList.toggle('on', !!cur && a.dataset.s === cur.id));
+  $$('.toc a[data-u]', side).forEach(a => a.classList.toggle('on', !!cu && a.dataset.u === cu.id));
+  const H = document.documentElement.scrollHeight - innerHeight;
+  $('#readbar i').style.width = (H > 0 ? Math.min(100, Math.max(0, scrollY / H * 100)) : 0) + '%';
+}
+window.addEventListener('scroll', () => {
+  if (RENDERED.v !== 'essay' || SPYQ) return;
+  SPYQ = true; requestAnimationFrame(() => { SPYQ = false; spy(); });
+}, {passive: true});
+function showSrc(el) {
+  const s = el.dataset.src, p = srcParse(s), day = p && BYDATE.get(p.date);
+  pop.innerHTML = `<div class="ph">出处${el.dataset.n ? ' ' + el.dataset.n : ''}</div>` +
+    (p ? `<p><b>${p.date}</b> 的直播 · ${p.card ? `卡片 #${p.card}` : `直播进度 ${p.t}(开播后多久)`}</p>` : `<p>${esc(s)}</p>`) +
+    (day ? `<p><a href="#/${p.date}">看这一场的每日总结 →</a></p>` : '') +
+    `<p class="pf">场次 ${esc(p ? p.stem : s)}${p ? ` · brant-why 里查:why.py --date ${p.date}` : ''}</p>`;
+  placePop(el);
+}
+
+/* 走势图:一条收盘价线 + 阶段底色 + 他的判断圆点(红=看多,蓝=看空,灰=事件);悬停/点按看当天和原话 */
+function drawCharts(e) {
+  $$('.chart[data-chart]', view).forEach(fig => {
+    const c = e.charts && e.charts[fig.dataset.chart];
+    if (!c || !c.series || !c.series.length) { fig.remove(); return; }
+    fig._c = c;
+    chartShell(fig, c);
+    chartDraw(fig);
+  });
+}
+function chartShell(fig, c) {
+  const S = c.series, hi = S.reduce((a, r) => r[1] > a[1] ? r : a), lo = S.reduce((a, r) => r[1] < a[1] ? r : a);
+  const used = ['多', '空', '事'].filter(k => c.marks.some(m => m.st === k));
+  const dot = k => `<span><i style="background:var(${k === '多' ? '--d-ll' : k === '空' ? '--d-ss' : '--muted'})"></i>${STL[k]}</span>`;
+  const nums = c.phases.filter(p => p.n !== '铺垫').map(p => p.n);
+  const q = m => `<span class="q">「${esc(fw(m.q))}」</span>`;
+  fig.innerHTML = `<div class="chd"><span class="cht">${esc(c.title)}</span>` +
+    `<span class="chs">${fw(`最高 ${hi[1].toFixed(2)}(${hi[0]})→ 最低 ${lo[1].toFixed(2)}(${lo[0]}),跌 ${((1 - lo[1] / hi[1]) * 100).toFixed(1)}%`)}</span></div>` +
+    `<div class="legend"><span><i class="ln"></i>${esc(c.sym)} 收盘价</span>${used.map(dot).join('')}` +
+    (nums.length ? `<span><i class="bd"></i>阶段 ${nums[0]}–${nums[nums.length - 1]}</span>` : '') + `</div>` +
+    `<div class="chbox" style="position:relative"><svg role="img" aria-label="${esc(c.title)}:${esc(c.sym)} 从 ${S[0][0]} 到 ${S[S.length - 1][0]} 的收盘价走势,标出他 ${c.marks.length} 次判断"></svg><div class="chtip" role="status"></div></div>` +
+    `<figcaption>${esc(fw(c.note || ''))}</figcaption>` +
+    `<details class="cmarks"><summary>图中 ${c.marks.length} 个标注的原话(按日期)</summary><ol>${c.marks.map(m =>
+      `<li><span class="md">${m.d}</span><div><span class="stb s-${m.st}">${STN[m.st]}</span>${esc(fw(m.what))} ${q(m)}${fnRef(m.src)}</div></li>`).join('')}</ol></details>`;
+}
+function chartDraw(fig) {
+  const c = fig._c, box = $('.chbox', fig), svg = $('svg', box), tip = $('.chtip', box);
+  const W = Math.max(280, Math.round(box.clientWidth)), narrow = W < 520, H = narrow ? 250 : 320;
+  const M = {l: 36, r: 10, t: 24, b: 24}, PW = W - M.l - M.r, PH = H - M.t - M.b;
+  const S = c.series, T = S.map(r => Date.parse(r[0] + 'T00:00:00Z')), t0 = T[0], t1 = T[T.length - 1];
+  const vals = S.map(r => r[1]), y0 = Math.floor((Math.min(...vals) - 6) / 10) * 10, y1 = Math.ceil((Math.max(...vals) + 6) / 10) * 10;
+  const X = t => M.l + (t - t0) / (t1 - t0) * PW, Y = v => M.t + (1 - (v - y0) / (y1 - y0)) * PH;
+  const day = 864e5, f1 = n => Math.round(n * 10) / 10;
+  let h = '';
+  c.phases.forEach((p, k) => {  // 阶段底色(隔一段一色)+ 顶部编号,点编号跳到正文那一段
+    const xa = X(Math.max(t0, Date.parse(p.from + 'T00:00:00Z') - day / 2)), xb = X(Math.min(t1, Date.parse(p.to + 'T00:00:00Z') + day / 2));
+    if (k % 2 === 0) h += `<rect class="ch-band" x="${f1(xa)}" y="${M.t}" width="${f1(xb - xa)}" height="${PH}"/>`;
+    h += `<text class="ch-bl" data-band="${esc(p.n)}" x="${f1((xa + xb) / 2)}" y="${M.t - 8}"><title>${esc(p.n)} ${esc(p.name)}</title>${esc(p.n)}</text>`;
+  });
+  const step = (y1 - y0) / 4 > 30 ? 40 : 20;
+  for (let v = Math.ceil(y0 / step) * step; v <= y1; v += step)
+    h += `<line class="ch-grid" x1="${M.l}" x2="${W - M.r}" y1="${f1(Y(v))}" y2="${f1(Y(v))}"/><text class="ch-ax" x="${M.l - 6}" y="${f1(Y(v) + 3.5)}" text-anchor="end">${v}</text>`;
+  const d0 = new Date(t0);
+  for (let y = d0.getUTCFullYear(), m = d0.getUTCMonth(); ; m++) {  // 月份刻度;窄屏只标 1/4/7/10 月
+    if (m > 11) { m = 0; y++; }
+    const t = Date.UTC(y, m, 1);
+    if (t > t1) break;
+    if (t < t0 && !(y === d0.getUTCFullYear() && m === d0.getUTCMonth())) continue;
+    const first = y === d0.getUTCFullYear() && m === d0.getUTCMonth(), x = X(Math.max(t, t0));
+    if (narrow && !first && m % 3 !== 0) continue;
+    const lab = m === 0 || first ? String(y) : `${m + 1}月`;
+    h += `<text class="ch-ax${m === 0 || first ? ' yr' : ''}" x="${f1(x)}" y="${H - 6}" text-anchor="${first ? 'start' : 'middle'}">${lab}</text>`;
+  }
+  h += `<path class="ch-line" d="M${S.map((r, k) => `${f1(X(T[k]))},${f1(Y(r[1]))}`).join('L')}"/>`;
+  const ih = vals.indexOf(Math.max(...vals)), il = vals.indexOf(Math.min(...vals));
+  h += [ih, il].map(k => `<circle class="ch-ext" cx="${f1(X(T[k]))}" cy="${f1(Y(vals[k]))}" r="3.5"/>`).join('');
+  h += `<line class="ch-x" y1="${M.t}" y2="${M.t + PH}" x1="0" x2="0" style="display:none"/><circle class="ch-focus" r="4" cx="0" cy="0" style="display:none"/>`;
+  h += `<rect class="ch-hit" x="${M.l}" y="${M.t}" width="${PW}" height="${PH}" fill="transparent"/>`;
+  const idx = new Map(S.map((r, k) => [r[0], k])), R = narrow ? 4.5 : 5.5, placed = [];
+  const labs = [];
+  c.marks.forEach((m, j) => {
+    const k = idx.get(m.d); if (k === undefined) return;
+    const x = X(T[k]), y = Y(vals[k]);
+    h += `<circle class="ch-dot s-${m.st}" data-m="${j}" cx="${f1(x)}" cy="${f1(y)}" r="${R}"><title>${esc(m.d)} ${esc(m.what)}</title></circle>`;
+    if (narrow || !m.lab) return;
+    const w = [...m.lab].reduce((a, ch) => a + (isCJ(ch) ? 11.5 : 6.6), 0) + 6;
+    const cx = Math.min(W - M.r - w / 2, Math.max(M.l + w / 2, x));
+    const span = S.reduce((a, r, k) => { const px = X(T[k]); if (px >= cx - w / 2 - 3 && px <= cx + w / 2 + 3) { const py = Y(r[1]); a[0] = Math.min(a[0], py); a[1] = Math.max(a[1], py); } return a; }, [y, y]);
+    let ly = Math.min(y, span[0]) - 9, up = true;  // 这段折线最高点再往上
+    if (ly - 12 < M.t + 2) { ly = Math.max(y, span[1]) + 20; up = false; }
+    const hit = yy => placed.some(b => cx - w / 2 < b.x + b.w && cx + w / 2 > b.x && yy - 12 < b.y + b.h && yy + 3 > b.y);
+    for (let n = 0; n < 4 && hit(ly); n++) ly += up ? -15 : 15;
+    if (up && ly - 12 < M.t + 2) { ly = Math.max(y, span[1]) + 20; up = false; }
+    placed.push({x: cx - w / 2, y: ly - 12, w, h: 15});
+    labs.push(`<line class="ch-lead" x1="${f1(x)}" y1="${f1(up ? y - R - 1 : y + R + 1)}" x2="${f1(cx)}" y2="${f1(up ? ly + 3 : ly - 12)}"/>` +
+      `<text class="ch-lab" x="${f1(cx)}" y="${f1(ly)}" text-anchor="middle">${esc(m.lab)}</text>`);
+  });
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  svg.setAttribute('height', H);
+  svg.innerHTML = h + labs.join('');
+  const cross = $('.ch-x', svg), focus = $('.ch-focus', svg);
+  let pinned = false;
+  const nearest = t => { let a = 0, b = T.length - 1; while (b - a > 1) { const mid = (a + b) >> 1; if (T[mid] < t) a = mid; else b = mid; } return t - T[a] < T[b] - t ? a : b; };
+  function show(k, mk) {
+    const [d, v] = S[k], x = X(T[k]), y = Y(v);
+    cross.setAttribute('x1', x); cross.setAttribute('x2', x); cross.style.display = '';
+    focus.setAttribute('cx', x); focus.setAttribute('cy', y); focus.style.display = '';
+    const ph = c.phases.find(p => d >= p.from && d <= p.to);
+    const m = mk || c.marks.find(z => z.d === d);
+    tip.innerHTML = `<div class="tt">${d} · ${esc(c.sym)} 收盘 ${v.toFixed(2)}</div>` +
+      (ph ? `<div class="tp">${ph.n === '铺垫' ? '铺垫' : '阶段 ' + esc(ph.n)} · ${esc(fw(ph.name))}</div>` : '') +
+      (m ? `<div class="tq"><span class="stb s-${m.st}">${STN[m.st]}</span>${esc(fw(m.what))}<br><span class="q">「${esc(fw(m.q))}」</span>${pinned ? fnRef(m.src) : ''}</div>` : '');
+    tip.classList.add('show');
+    const bw = box.clientWidth, sc = bw / W, tw = tip.offsetWidth, th = tip.offsetHeight;
+    let lx = x * sc + 14; if (lx + tw > bw) lx = Math.max(0, x * sc - tw - 14);
+    tip.style.left = lx + 'px';
+    tip.style.top = Math.max(0, Math.min(H * sc - th, y * sc - th / 2)) + 'px';
+  }
+  function hide() { cross.style.display = focus.style.display = 'none'; tip.classList.remove('show', 'pin'); pinned = false; $$('.ch-dot.on', svg).forEach(n => n.classList.remove('on')); }
+  fig._unpin = () => { if (pinned) hide(); };
+  const at = ev => { const r = svg.getBoundingClientRect(); return t0 + ((ev.clientX - r.left) * W / r.width - M.l) / PW * (t1 - t0); };
+  svg.onpointermove = ev => { if (!pinned && !ev.target.closest('.ch-dot')) show(nearest(at(ev))); };
+  svg.onpointerleave = () => { if (!pinned) hide(); };
+  svg.onclick = ev => {
+    const dt = ev.target.closest('.ch-dot');
+    if (dt) {
+      const m = c.marks[+dt.dataset.m];
+      $$('.ch-dot.on', svg).forEach(n => n.classList.remove('on'));
+      dt.classList.add('on'); pinned = true; tip.classList.add('pin');
+      show(idx.get(m.d), m);
+      return;
+    }
+    const bl = ev.target.closest('[data-band]');
+    if (bl) {
+      const hd = $$('.essay h3', view).find(x => x.textContent.trim().startsWith(bl.dataset.band));
+      if (hd) hd.scrollIntoView({block: 'start'});
+      return;
+    }
+    if (pinned) hide(); else show(nearest(at(ev)));
+  };
+}
+let RZ = null;
+window.addEventListener('resize', () => {
+  clearTimeout(RZ);
+  RZ = setTimeout(() => { if (RENDERED.v === 'essay') $$('.chart', view).forEach(f => f._c && chartDraw(f)); }, 150);
+});
 
 /* ---------- 大方向时间线:三条线 × 每一场 ---------- */
 const DL = {'看多': ['ll', '多'], '偏多': ['l', '偏多'], '震荡': ['z', '震'], '偏空': ['s', '偏空'], '看空': ['ss', '空'], '没说': ['n', '·']};
@@ -1007,6 +1371,7 @@ function renderSearch(q) {
 function route() {
   hidePop();
   const h = decodeURIComponent(location.hash.replace(/^#\/?/, '')), parts = h.split('/');
+  $('#readbar').hidden = !(parts[0] === 'essays' && BYSLUG.has(parts[1]));
   if (parts[0] === 'essays') {
     setTab('essays');
     renderSide('essays');
@@ -1054,6 +1419,9 @@ function showPop(el) {
   if (!r) return;
   pop.innerHTML = `<div class="ph"><span class="rid">${id}</span>${esc(r.n || '')}${r.st ? `<span class="tag">${esc(r.st)}</span>` : ''}</div>` +
     `${r.s ? `<p>${esc(r.s)}</p>` : ''}<p class="pf">${isMis ? `老毛病编号 · brant-why 里查:why.py --lesson ${id}` : `理念台账 v2 编号 · brant-why 里查:why.py --idea ${id}`}</p>`;
+  placePop(el);
+}
+function placePop(el) {
   pop.classList.add('show');
   const b = el.getBoundingClientRect(), pw = pop.offsetWidth, ph = pop.offsetHeight;
   pop.style.left = Math.max(12, Math.min(window.innerWidth - pw - 12, b.left - 12)) + 'px';
@@ -1063,7 +1431,11 @@ function hidePop() { pop.classList.remove('show'); }
 document.addEventListener('click', e => {
   const r = e.target.closest('[data-rid]');
   if (r) { e.preventDefault(); showPop(r); return; }
+  const fnb = e.target.closest('.fn[data-src]');
+  if (fnb) { e.preventDefault(); showSrc(fnb); return; }
   if (!e.target.closest('.pop')) hidePop();
+  $$('.chart', view).forEach(f => { if (f._unpin && !f.contains(e.target)) f._unpin(); });
+  if (e.target.closest('[data-top]')) { e.preventDefault(); window.scrollTo(0, 0); return; }
   const jump = e.target.closest('[data-jump]');
   if (jump) { e.preventDefault(); const t = document.getElementById(jump.dataset.jump); if (t) t.scrollIntoView({block: 'start'}); return; }
   const act = e.target.closest('[data-act="lessons"]');
@@ -1100,6 +1472,7 @@ $('#q').addEventListener('input', e => {
 });
 $('#q').addEventListener('keydown', e => { if (e.key === 'Escape') { e.target.value = ''; e.target.dispatchEvent(new Event('input')); e.target.blur(); } });
 document.addEventListener('keydown', e => {
+  if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('.fn[data-src]')) { e.preventDefault(); showSrc(e.target); return; }
   if (e.target.matches('input,select,textarea') || e.metaKey || e.ctrlKey || e.altKey) return;
   if (e.key === '/') { e.preventDefault(); $('#q').focus(); return; }
   if (e.key === 'Escape') { hidePop(); return; }

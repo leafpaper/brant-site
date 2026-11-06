@@ -53,10 +53,15 @@ summary: 一两句摘要(列表页显示)
 ### 小节
 - 列表,可缩进
 段落
-## 时间线                     (标题含「时间线」:每行写 - **时间**:事情)
+> 「一句最重要的原话」[[场次#卡号]]     (引文块:整行是 > 加一句原话加出处,大字显示)
+> **容易读错**:……                    (提示框:> 后面不是原话的,画成灰底说明框,标签取 **…**)
+{{chart qqq}}                        (图表:数据放在同名的 .json 里,见下)
+## 时间线                     (标题含「时间线」:每行写 - **时间**:事情,画成竖排时间轴)
 ```
 
-- 原话用「」,后面紧跟出处:`[[20250509_7ZMWXJgEf9Q#26]]`(场次#卡号)或 `[[20240924_mtaD4yBJRZI 00:27:41]]`(场次 + 直播进度)。
+- 原话用「」,后面紧跟出处:`[[20250509_7ZMWXJgEf9Q#26]]`(场次#卡号)或 `[[20240924_mtaD4yBJRZI 00:27:41]]`(场次 + 直播进度)。网页上出处显示成小角标 1 2 3,点开看是哪天哪场。
+- 标点照常写半角也行:网页显示时,中文旁边的 `, : ; ? ! ( )` 会自动换成全角。
+- 图表数据 `content/essays/<同名>.json`:`{"charts": {"qqq": {title, sym, note, series: [[日期, 收盘价]…], phases: [{from, to, n, name}], marks: [{d, st: 多|空|事, q: 原话, src: 出处, what: 一句说明, lab: 图上短标签(可省)}]}}}`。`phases[].n` 写 ①②…,和正文 `### ① …` 小节标题开头对上,点图上编号就能跳过去。`marks[].q` 也必须是原话:改了标注,把它们写成一行行 `- 「原话」[[出处]]` 存成临时 md,交给 brant-lens 的 `check_essay.py` 核一遍。价格是长桥日线收盘价(未复权)。
 - 写完要逐句核对原话(brant-lens 里的核对脚本:原话必须出现在所标场次的逐字稿里,出处必须存在)。
 - 加了「」却不是原话的,改成原话或去掉引号。
 
@@ -73,7 +78,7 @@ brant-lens 的 `export_daily.py` 负责解析总结 md;总结格式改了改那�
               history: [{date, status, note, quote, card_id}] }],
   rules: { 编号: { n: 名称, s: 陈述, st: 有效期 } }
 }
-Block = {t: "li", lvl, md} | {t: "p", md}
+Block = {t: "li", lvl, md} | {t: "p", md}            (文章里另有 quote / aside / chart)
 ```
 
-`build.py` 生成时再加上 `essays: [{slug, title, period, written, summary, chars, sections}]`,结构同上。
+`build.py` 生成时再加上 `essays: [{slug, title, period, written, summary, chars, mins, quotes, srcs, charts, sections}]`,结构同上。
