@@ -498,6 +498,37 @@ body.nots .fn{display:none}
 .stb{display:inline-block;font-size:11px;font-weight:650;border-radius:4px;padding:0 6px;margin-right:6px;line-height:1.7}
 .stb.s-多{background:var(--d-ll);color:var(--d-ll-i)}.stb.s-空{background:var(--d-ss);color:var(--d-ss-i)}.stb.s-事{background:var(--chip);color:var(--muted)}
 .chart figcaption{font-size:12.5px;color:var(--faint);line-height:1.7;margin-top:8px}
+/* 示意图(柱状 bar、对比折线 paths):两个系列色在明暗底色上都过了色觉校验;文字一律用文字色,不用系列色 */
+:root{--c1:#2a78d6;--c2:#eb6834}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--c1:#3987e5;--c2:#d95926}}
+:root[data-theme="dark"]{--c1:#3987e5;--c2:#d95926}
+.chart .legend i.k1,.chtip i.k1{width:16px;height:2px;border-radius:1px;background:var(--c1)}
+.chart .legend i.k2,.chtip i.k2{width:16px;height:2px;border-radius:1px;background:var(--c2)}
+.chart.bar{max-width:520px}
+.ch-s1,.ch-s2{fill:none;stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+.ch-s1{stroke:var(--c1)}.ch-s2{stroke:var(--c2)}
+.ch-p1,.ch-p2{stroke:var(--bg);stroke-width:2}
+.ch-p1{fill:var(--c1)}.ch-p2{fill:var(--c2)}
+.ch-bar{fill:var(--c1)}
+.ch-bar.on{opacity:.78}
+.ch-base{stroke:var(--border);stroke-width:1}
+.ch-val{font-size:12.5px;fill:var(--text);font-weight:650;font-variant-numeric:tabular-nums;paint-order:stroke;stroke:var(--bg);stroke-width:4px;stroke-linejoin:round;pointer-events:none}
+.ch-cat{font-size:12px;fill:var(--muted);text-anchor:middle;pointer-events:none}
+.ch-hit{cursor:default;outline:none}
+.ch-hit:focus-visible{stroke:var(--accent);stroke-width:1.5}
+.chpanels{display:grid;grid-template-columns:1fr 1fr;gap:14px 26px}
+@media(max-width:640px){.chpanels{grid-template-columns:1fr}}
+.chpanel .pt{font-size:13.5px;font-weight:650}
+.chpanel .ps{font-size:12.5px;color:var(--muted);margin:0 0 6px}
+.chtip .tr{display:flex;align-items:center;gap:8px;white-space:nowrap}
+.chtip .tr b{font-variant-numeric:tabular-nums}
+.chtip .tr span{color:var(--muted)}
+.chtip i{display:inline-block;flex:none}
+.ctab table{border-collapse:collapse;margin:8px 0 0;font-size:13px;font-variant-numeric:tabular-nums}
+.ctab th,.ctab td{padding:4px 12px 4px 0;text-align:right;border-bottom:1px solid var(--border);white-space:nowrap}
+.ctab th:first-child,.ctab td:first-child{text-align:left}
+.ctab th{color:var(--muted);font-weight:600}
+.ctab .tw{overflow-x:auto}
 .cmarks{margin-top:10px;font-size:14px}
 .cmarks summary{cursor:pointer;color:var(--muted);font-size:13px}
 .cmarks ol{list-style:none;margin:8px 0 0;padding:0}
@@ -1025,26 +1056,30 @@ function showSrc(el) {
 function drawCharts(e) {
   $$('.chart[data-chart]', view).forEach(fig => {
     const c = e.charts && e.charts[fig.dataset.chart];
-    if (!c || !c.series || !c.series.length) { fig.remove(); return; }
+    if (!c) { fig.remove(); return; }
     fig._c = c;
-    chartShell(fig, c);
-    chartDraw(fig);
+    // kind: 'bar' 柱状示意图(bars)、'paths' 两种做法对比的折线小图(panels);其余按走势图画(series/marks/phases)
+    if (c.kind === 'bar' && c.bars && c.bars.length) { fig.classList.add('bar'); barShell(fig, c); fig._draw = () => barDraw(fig); }
+    else if (c.kind === 'paths' && c.panels && c.panels.length) { pathsShell(fig, c); fig._draw = () => pathsDraw(fig); }
+    else if (c.series && c.series.length) { chartShell(fig, c); fig._draw = () => chartDraw(fig); }
+    else { fig.remove(); return; }
+    fig._draw();
   });
 }
 function chartShell(fig, c) {
   const S = c.series, hi = S.reduce((a, r) => r[1] > a[1] ? r : a), lo = S.reduce((a, r) => r[1] < a[1] ? r : a);
   const used = ['多', '空', '事'].filter(k => c.marks.some(m => m.st === k));
-  const dot = k => `<span><i style="background:var(${k === '多' ? '--d-ll' : k === '空' ? '--d-ss' : '--muted'})"></i>${STL[k]}</span>`;
+  const dot = k => `<span><i style="background:var(${k === '多' ? '--d-ll' : k === '空' ? '--d-ss' : '--muted'})"></i>${esc((c.stl && c.stl[k]) || STL[k])}</span>`;  // c.stl:这张图自己的图例文字
   const nums = c.phases.filter(p => p.n !== '铺垫').map(p => p.n);
   const q = m => `<span class="q">「${esc(fw(m.q))}」</span>`;
   fig.innerHTML = `<div class="chd"><span class="cht">${esc(c.title)}</span>` +
-    `<span class="chs">${fw(`最高 ${hi[1].toFixed(2)}(${hi[0]})→ 最低 ${lo[1].toFixed(2)}(${lo[0]}),跌 ${((1 - lo[1] / hi[1]) * 100).toFixed(1)}%`)}</span></div>` +
+    `<span class="chs">${c.sub ? esc(fw(c.sub)) : fw(`最高 ${hi[1].toFixed(2)}(${hi[0]})→ 最低 ${lo[1].toFixed(2)}(${lo[0]}),跌 ${((1 - lo[1] / hi[1]) * 100).toFixed(1)}%`)}</span></div>` +
     `<div class="legend"><span><i class="ln"></i>${esc(c.sym)} 收盘价</span>${used.map(dot).join('')}` +
     (nums.length ? `<span><i class="bd"></i>阶段 ${nums[0]}–${nums[nums.length - 1]}</span>` : '') + `</div>` +
     `<div class="chbox" style="position:relative"><svg role="img" aria-label="${esc(c.title)}:${esc(c.sym)} 从 ${S[0][0]} 到 ${S[S.length - 1][0]} 的收盘价走势,标出他 ${c.marks.length} 次判断"></svg><div class="chtip" role="status"></div></div>` +
     `<figcaption>${esc(fw(c.note || ''))}</figcaption>` +
     `<details class="cmarks"><summary>图中 ${c.marks.length} 个标注的原话(按日期)</summary><ol>${c.marks.map(m =>
-      `<li><span class="md">${m.d}</span><div><span class="stb s-${m.st}">${STN[m.st]}</span>${esc(fw(m.what))} ${q(m)}${fnRef(m.src)}</div></li>`).join('')}</ol></details>`;
+      `<li><span class="md">${m.d}</span><div><span class="stb s-${m.st}">${esc((c.stn && c.stn[m.st]) || STN[m.st])}</span>${esc(fw(m.what))} ${q(m)}${fnRef(m.src)}</div></li>`).join('')}</ol></details>`;
 }
 function chartDraw(fig) {
   const c = fig._c, box = $('.chbox', fig), svg = $('svg', box), tip = $('.chtip', box);
@@ -1060,7 +1095,7 @@ function chartDraw(fig) {
     if (k % 2 === 0) h += `<rect class="ch-band" x="${f1(xa)}" y="${M.t}" width="${f1(xb - xa)}" height="${PH}"/>`;
     h += `<text class="ch-bl" data-band="${esc(p.n)}" x="${f1((xa + xb) / 2)}" y="${M.t - 8}"><title>${esc(p.n)} ${esc(p.name)}</title>${esc(p.n)}</text>`;
   });
-  const step = (y1 - y0) / 4 > 30 ? 40 : 20;
+  const step = [20, 40, 50, 100, 200, 500].find(s => (y1 - y0) / s <= 6) || 1000;  // 横线不超过 6 条左右
   for (let v = Math.ceil(y0 / step) * step; v <= y1; v += step)
     h += `<line class="ch-grid" x1="${M.l}" x2="${W - M.r}" y1="${f1(Y(v))}" y2="${f1(Y(v))}"/><text class="ch-ax" x="${M.l - 6}" y="${f1(Y(v) + 3.5)}" text-anchor="end">${v}</text>`;
   const d0 = new Date(t0);
@@ -1071,6 +1106,7 @@ function chartDraw(fig) {
     if (t < t0 && !(y === d0.getUTCFullYear() && m === d0.getUTCMonth())) continue;
     const first = y === d0.getUTCFullYear() && m === d0.getUTCMonth(), x = X(Math.max(t, t0));
     if (narrow && !first && m % 3 !== 0) continue;
+    if (t1 - t0 > 900 * day && m !== 0) continue;  // 跨度超过两年半:只标每年 1 月
     const lab = m === 0 || first ? String(y) : `${m + 1}月`;
     h += `<text class="ch-ax${m === 0 || first ? ' yr' : ''}" x="${f1(x)}" y="${H - 6}" text-anchor="${first ? 'start' : 'middle'}">${lab}</text>`;
   }
@@ -1112,7 +1148,7 @@ function chartDraw(fig) {
     const m = mk || c.marks.find(z => z.d === d);
     tip.innerHTML = `<div class="tt">${d} · ${esc(c.sym)} 收盘 ${v.toFixed(2)}</div>` +
       (ph ? `<div class="tp">${ph.n === '铺垫' ? '铺垫' : '阶段 ' + esc(ph.n)} · ${esc(fw(ph.name))}</div>` : '') +
-      (m ? `<div class="tq"><span class="stb s-${m.st}">${STN[m.st]}</span>${esc(fw(m.what))}<br><span class="q">「${esc(fw(m.q))}」</span>${pinned ? fnRef(m.src) : ''}</div>` : '');
+      (m ? `<div class="tq"><span class="stb s-${m.st}">${esc((c.stn && c.stn[m.st]) || STN[m.st])}</span>${esc(fw(m.what))}<br><span class="q">「${esc(fw(m.q))}」</span>${pinned ? fnRef(m.src) : ''}</div>` : '');
     tip.classList.add('show');
     const bw = box.clientWidth, sc = bw / W, tw = tip.offsetWidth, th = tip.offsetHeight;
     let lx = x * sc + 14; if (lx + tw > bw) lx = Math.max(0, x * sc - tw - 14);
@@ -1142,10 +1178,114 @@ function chartDraw(fig) {
     if (pinned) hide(); else show(nearest(at(ev)));
   };
 }
+/* 柱状示意图:{kind:'bar', title, sub, note, cols:[类别名, 数值名], bars:[{k: 类别, v: 数值, lab: 柱顶文字, tip: 悬停说明}]}。每根柱子都标了数,所以不画纵轴刻度。 */
+function barShell(fig, c) {
+  const cols = c.cols || ['', ''];
+  fig.innerHTML = `<div class="chd"><span class="cht">${esc(fw(c.title))}</span><span class="chs">${esc(fw(c.sub || ''))}</span></div>` +
+    `<div class="chbox" style="position:relative"><svg role="img" aria-label="${esc(c.title)}:${esc(c.bars.map(b => b.k + ' ' + b.lab).join(','))}"></svg><div class="chtip" role="status"></div></div>` +
+    `<figcaption>${esc(fw(c.note || ''))}</figcaption>` +
+    `<details class="cmarks ctab"><summary>看数据表</summary><div class="tw"><table><thead><tr><th>${esc(cols[0])}</th><th>${esc(cols[1])}</th></tr></thead><tbody>${c.bars.map(b =>
+      `<tr><td>${esc(b.k)}</td><td>${esc(b.lab)}</td></tr>`).join('')}</tbody></table></div></details>`;
+}
+function barDraw(fig) {
+  const c = fig._c, box = $('.chbox', fig), svg = $('svg', box), tip = $('.chtip', box);
+  const W = Math.max(260, Math.round(box.clientWidth)), H = W < 420 ? 220 : 260, M = {l: 6, r: 6, t: 28, b: 28}, PW = W - M.l - M.r, PH = H - M.t - M.b;
+  const n = c.bars.length, band = PW / n, bw = Math.min(24, band * 0.5), top = Math.max(...c.bars.map(b => b.v)), base = M.t + PH;
+  const f1 = v => Math.round(v * 10) / 10;
+  let h = `<line class="ch-base" x1="${M.l}" x2="${W - M.r}" y1="${base}" y2="${base}"/>`;
+  c.bars.forEach((b, k) => {  // 柱子不超过 24px 宽,顶端圆角 4px,底边平
+    const cx = M.l + band * (k + .5), y = base - Math.max(2, b.v / top * PH), r = Math.min(4, (base - y) / 2), a = cx - bw / 2, z = cx + bw / 2;
+    h += `<path class="ch-bar" data-k="${k}" d="M${f1(a)},${base}V${f1(y + r)}Q${f1(a)},${f1(y)} ${f1(a + r)},${f1(y)}H${f1(z - r)}Q${f1(z)},${f1(y)} ${f1(z)},${f1(y + r)}V${base}Z"/>` +
+      `<text class="ch-val" x="${f1(cx)}" y="${f1(y - 7)}" text-anchor="middle">${esc(b.lab)}</text><text class="ch-cat" x="${f1(cx)}" y="${H - 8}">${esc(b.k)}</text>` +
+      `<rect class="ch-hit" data-k="${k}" tabindex="0" x="${f1(cx - band / 2)}" y="${M.t - 20}" width="${f1(band)}" height="${PH + 20 + M.b}" fill="transparent" aria-label="${esc(b.k + ':' + (b.tip || b.lab))}"/>`;
+  });
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  svg.setAttribute('height', H);
+  svg.innerHTML = h;
+  const hide = () => { tip.classList.remove('show'); $$('.ch-bar.on', svg).forEach(x => x.classList.remove('on')); };
+  const show = k => {
+    hide();
+    const b = c.bars[k], cx = M.l + band * (k + .5), sc = box.clientWidth / W;
+    $(`.ch-bar[data-k="${k}"]`, svg).classList.add('on');
+    tip.innerHTML = `<div class="tt">${esc(b.k)} → ${esc(b.lab)}</div>` + (b.tip ? `<div class="tp">${esc(fw(b.tip))}</div>` : '');
+    tip.classList.add('show');
+    tip.style.left = Math.max(0, Math.min(box.clientWidth - tip.offsetWidth, cx * sc - tip.offsetWidth / 2)) + 'px';
+    tip.style.top = '0px';
+  };
+  $$('.ch-hit', svg).forEach(x => {
+    x.onpointerenter = x.onfocus = x.onclick = () => show(+x.dataset.k);
+    x.onpointerleave = x.onblur = hide;
+  });
+}
+/* 两种做法对比:{kind:'paths', title, sub, note, unit, xs:[每一步的全名], xshort:[横轴短名], series:[{name, short}×2], panels:[{name, desc, vals:[[系列1…],[系列2…]]}]}。
+   几张小图共用同一个纵轴;线尾标数值,中途的最高点也标;悬停看每一步两条线的数。 */
+function pathsShell(fig, c) {
+  const u = c.unit || '';
+  fig.innerHTML = `<div class="chd"><span class="cht">${esc(fw(c.title))}</span><span class="chs">${esc(fw(c.sub || ''))}</span></div>` +
+    `<div class="legend">${c.series.map((s, i) => `<span><i class="k${i + 1}"></i>${esc(fw(s.name))}</span>`).join('')}</div>` +
+    `<div class="chpanels">${c.panels.map((p, j) => `<div class="chpanel"><div class="pt">${esc(fw(p.name))}</div><div class="ps">${esc(fw(p.desc || ''))}</div>` +
+      `<div class="chbox" style="position:relative"><svg role="img" data-p="${j}" aria-label="${esc(p.name)}:${esc(c.series.map((s, i) => `${s.short || s.name}最后 ${p.vals[i][p.vals[i].length - 1]} ${u}`).join(','))}"></svg><div class="chtip" role="status"></div></div></div>`).join('')}</div>` +
+    `<figcaption>${esc(fw(c.note || ''))}</figcaption>` +
+    `<details class="cmarks ctab"><summary>看数据表</summary><div class="tw"><table><thead><tr><th></th>${c.panels.map(p => c.series.map(s =>
+      `<th>${esc(p.name)}<br>${esc(s.short || s.name)}</th>`).join('')).join('')}</tr></thead><tbody>${c.xs.map((x, k) =>
+      `<tr><td>${esc(x)}</td>${c.panels.map(p => c.series.map((s, i) => `<td>${p.vals[i][k]} ${esc(u)}</td>`).join('')).join('')}</tr>`).join('')}</tbody></table></div></details>`;
+}
+function pathsDraw(fig) {
+  const c = fig._c, u = c.unit || '', f1 = v => Math.round(v * 10) / 10;
+  const top = Math.max(...c.panels.flatMap(p => p.vals.flat())), step = [10, 20, 50, 100, 200, 500, 1000].find(s => top / s <= 4) || 2000, y1 = top * 1.08;
+  $$('.chpanel', fig).forEach((el, j) => {
+    const p = c.panels[j], box = $('.chbox', el), svg = $('svg', box), tip = $('.chtip', box);
+    const W = Math.max(240, Math.round(box.clientWidth)), H = 230, M = {l: 34, r: 58, t: 16, b: 24}, PW = W - M.l - M.r, PH = H - M.t - M.b;
+    const n = c.xs.length, X = k => M.l + k / (n - 1) * PW, Y = v => M.t + (1 - v / y1) * PH;
+    let h = '';
+    for (let v = 0; v <= top; v += step)
+      h += `<line class="ch-grid" x1="${M.l}" x2="${M.l + PW}" y1="${f1(Y(v))}" y2="${f1(Y(v))}"/><text class="ch-ax" x="${M.l - 6}" y="${f1(Y(v) + 3.5)}" text-anchor="end">${v}</text>`;
+    (c.xshort || c.xs).forEach((x, k) => { h += `<text class="ch-ax" x="${f1(X(k))}" y="${H - 6}" text-anchor="middle">${esc(x)}</text>`; });
+    h += `<line class="ch-x" y1="${M.t}" y2="${M.t + PH}" x1="0" x2="0" style="display:none"/>`;
+    p.vals.forEach((vs, i) => {
+      h += `<path class="ch-s${i + 1}" d="M${vs.map((v, k) => `${f1(X(k))},${f1(Y(v))}`).join('L')}"/>`;
+      h += vs.map((v, k) => `<circle class="ch-p${i + 1}" cx="${f1(X(k))}" cy="${f1(Y(v))}" r="${k === n - 1 ? 4.5 : 3.5}"/>`).join('');
+    });
+    const ends = p.vals.map((vs, i) => ({i, v: vs[n - 1], y: Y(vs[n - 1])})).sort((a, b) => a.y - b.y);  // 线尾数值:挨得太近就上下错开
+    if (ends.length === 2 && ends[1].y - ends[0].y < 15) { const mid = (ends[0].y + ends[1].y) / 2; ends[0].y = mid - 7.5; ends[1].y = mid + 7.5; }
+    ends.forEach(e => { h += `<text class="ch-val" x="${f1(X(n - 1) + 9)}" y="${f1(e.y + 4)}">${e.v} ${esc(u)}</text>`; });
+    p.vals.forEach(vs => {  // 中途的最高点比线尾高出一倍以上时(大起大落),把最高点也标出来
+      const mx = Math.max(...vs), k = vs.indexOf(mx);
+      if (k > 0 && k < n - 1 && mx >= 2 * vs[n - 1]) h += `<text class="ch-val" x="${f1(X(k))}" y="${f1(Y(mx) - 9)}" text-anchor="middle">${mx} ${esc(u)}</text>`;
+    });
+    h += `<rect class="ch-hit" tabindex="0" x="${M.l - 10}" y="${M.t}" width="${PW + 20}" height="${PH + M.b}" fill="transparent" aria-label="${esc(p.name)}:左右方向键逐步查看"/>`;
+    svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+    svg.setAttribute('height', H);
+    svg.innerHTML = h;
+    const cross = $('.ch-x', svg), hit = $('.ch-hit', svg);
+    let cur = -1;
+    const hide = () => { cross.style.display = 'none'; tip.classList.remove('show'); cur = -1; };
+    const show = k => {
+      cur = k;
+      const x = X(k), sc = box.clientWidth / W;
+      cross.setAttribute('x1', x); cross.setAttribute('x2', x); cross.style.display = '';
+      tip.innerHTML = `<div class="tt">${esc(c.xs[k])}</div>` + c.series.map((s, i) =>
+        `<div class="tr"><i class="k${i + 1}"></i><b>${p.vals[i][k]} ${esc(u)}</b><span>${esc(s.short || s.name)}</span></div>`).join('');
+      tip.classList.add('show');
+      let lx = x * sc + 12; if (lx + tip.offsetWidth > box.clientWidth) lx = Math.max(0, x * sc - tip.offsetWidth - 12);
+      tip.style.left = lx + 'px';
+      tip.style.top = '4px';
+    };
+    const at = ev => { const r = svg.getBoundingClientRect(); return Math.max(0, Math.min(n - 1, Math.round(((ev.clientX - r.left) * W / r.width - M.l) / PW * (n - 1)))); };
+    svg.onpointermove = svg.onclick = ev => show(at(ev));
+    svg.onpointerleave = hide;
+    hit.onfocus = () => show(cur < 0 ? n - 1 : cur);
+    hit.onblur = hide;
+    hit.onkeydown = ev => {
+      if (ev.key === 'ArrowLeft') { show(Math.max(0, cur - 1)); ev.preventDefault(); }
+      if (ev.key === 'ArrowRight') { show(Math.min(n - 1, cur + 1)); ev.preventDefault(); }
+    };
+  });
+}
 let RZ = null;
 window.addEventListener('resize', () => {
   clearTimeout(RZ);
-  RZ = setTimeout(() => { if (RENDERED.v === 'essay') $$('.chart', view).forEach(f => f._c && chartDraw(f)); }, 150);
+  RZ = setTimeout(() => { if (RENDERED.v === 'essay') $$('.chart', view).forEach(f => f._draw && f._draw()); }, 150);
 });
 
 /* ---------- 大方向时间线:三条线 × 每一场 ---------- */
